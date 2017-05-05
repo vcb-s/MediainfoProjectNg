@@ -21,7 +21,6 @@ namespace media_info_project_ng
         public MainWindow()
         {
             InitializeComponent();
-//            DataGrid1.ItemsSource = _fileInfoModel.FileInfoDetails;
             DataGrid1.DataContext = _fileInfoModel;
             StatusBlock.DataContext = _fileInfoModel;
 //            var MI = new MediaInfo();
@@ -86,20 +85,30 @@ namespace media_info_project_ng
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             _fileInfoModel.Clear();
+            TxtBox.Text = "";
         }
 
         private void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
-            
-                var paths = new List<string>(e.Data.GetData(DataFormats.FileDrop) as string[]);
-                var FA = paths?.Select(path => File.GetAttributes(path)).ToList();
-            
-            
+            var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (paths == null) return;
+            foreach (var path in paths)
+            {
+                if (File.GetAttributes(path) != FileAttributes.Archive) continue;
+                var sw = new Stopwatch();
+                var length = new System.IO.FileInfo(path).Length;
+                sw.Start();
+                _fileInfoModel.AddItems(new List<string> {path});
+                sw.Stop();
+                TxtBox.Text += "Loading: " + path + "\r\nCost " + sw.ElapsedMilliseconds + "ms! Length: " + length +
+                               "bytes \r\n";
+            }
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
         {
-            // TODO: It doesn't work!!!!
+            // TODO: It doesn't work!!!! 
+            // Edited: May work, but no effect on the mouse cursor
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.All : DragDropEffects.None;
         }
     }

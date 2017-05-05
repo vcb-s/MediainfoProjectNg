@@ -18,6 +18,8 @@ namespace media_info_project_ng
         public string Filename { get; set; }
         public string Format { get; set; }
         public string Bitrate { get; set; }
+        public int VideoCount { get; set; }
+        public int AudioCount { get; set; }
     }
 
     public class VideoInfo
@@ -45,19 +47,19 @@ namespace media_info_project_ng
 
     public class FileInfo
     {
-        private GeneralInfo GeneralInfo { get;} = new GeneralInfo();
-        private List<VideoInfo> VideoInfos { get;} = new List<VideoInfo>();
-        private List<AudioInfo> AudioInfos { get;} = new List<AudioInfo>();
-        public string Summary { get;}
+        private GeneralInfo GeneralInfo { get; } = new GeneralInfo();
+        private List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
+        private List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
+        public string Summary { get; }
 
         // TODO: Is it better to use property than method?
         public FileInfoDetail GetDetail() => new FileInfoDetail
         {
             Filename = GeneralInfo.Filename,
-            Fps = VideoInfos[0]?.Fps,
             // TODO: more elegant
-            Format1 = AudioInfos.Count > 0 ? AudioInfos[0]?.Format : "",
-            Format2 = AudioInfos.Count > 1 ? AudioInfos[1]?.Format : ""
+            Fps = GeneralInfo.VideoCount > 0 ? VideoInfos[0].Fps : "",
+            Format1 = GeneralInfo.AudioCount > 0 ? AudioInfos[0]?.Format : "",
+            Format2 = GeneralInfo.AudioCount > 1 ? AudioInfos[1]?.Format : ""
         };
 
         public FileInfo(string url)
@@ -66,14 +68,23 @@ namespace media_info_project_ng
             MI.Open(url);
             MI.Option("Complete");
             Summary = MI.Inform();
-
             {
                 GeneralInfo.Filename = MI.Get(StreamKind.General, 0, "FileName");
                 GeneralInfo.Format = MI.Get(StreamKind.General, 0, "Format");
                 GeneralInfo.Bitrate = MI.Get(StreamKind.General, 0, "OverallBitRate/String");
+                {
+                    GeneralInfo.VideoCount = int.TryParse(MI.Get(StreamKind.General, 0, "VideoCount"), out var i)
+                        ? i
+                        : 0;
+                }
+                {
+                    GeneralInfo.AudioCount = int.TryParse(MI.Get(StreamKind.General, 0, "VideoCount"), out var i)
+                        ? i
+                        : 0;
+                }
             }
 
-            for (var i = 0; i < int.Parse(MI.Get(StreamKind.General, 0, "VideoCount")); i++)
+            for (var i = 0; i < GeneralInfo.VideoCount; i++)
             {
                 VideoInfos.Add(new VideoInfo
                 {
@@ -83,7 +94,7 @@ namespace media_info_project_ng
                 });
             }
 
-            for (var i = 0; i < int.Parse(MI.Get(StreamKind.General, 0, "AudioCount")); i++)
+            for (var i = 0; i < GeneralInfo.AudioCount; i++)
             {
                 AudioInfos.Add(new AudioInfo
                 {
