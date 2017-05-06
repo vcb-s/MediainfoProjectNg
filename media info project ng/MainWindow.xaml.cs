@@ -131,6 +131,7 @@ namespace media_info_project_ng
 
         private void DataGrid1_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key != Key.Delete) return;
             _fileInfoModel.RemoveItem(DataGrid1.SelectedIndex);
         }
     }
