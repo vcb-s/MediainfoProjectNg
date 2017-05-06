@@ -78,7 +78,7 @@ namespace media_info_project_ng
                         : 0;
                 }
                 {
-                    GeneralInfo.AudioCount = int.TryParse(MI.Get(StreamKind.General, 0, "VideoCount"), out var i)
+                    GeneralInfo.AudioCount = int.TryParse(MI.Get(StreamKind.General, 0, "AudioCount"), out var i)
                         ? i
                         : 0;
                 }
