@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using MediaInfoLib;
 
 namespace media_info_project_ng
@@ -118,6 +119,14 @@ namespace media_info_project_ng
             // TODO: It doesn't work!!!! 
             // Edited: May work, but no effect on the mouse cursor
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.All : DragDropEffects.None;
+        }
+
+        private void DataGrid1_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is ScrollViewer)
+            {
+                ((DataGrid) sender).UnselectAll();
+            }
         }
     }
 }

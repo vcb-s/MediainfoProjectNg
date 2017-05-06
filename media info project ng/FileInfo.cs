@@ -18,6 +18,7 @@ namespace media_info_project_ng
     public class GeneralInfo
     {
         public string Filename { get; set; }
+        public string FullPath { get; set; }
         public string Format { get; set; }
         public string Bitrate { get; set; }
         public int VideoCount { get; set; }
@@ -63,7 +64,10 @@ namespace media_info_project_ng
         public string Audio2Depth { get; set; } = string.Empty;
         public string Audio2Language { get; set; } = string.Empty;
         public string HasChapter { get; set; } = string.Empty;
+        public string FullPath { get; set; } = string.Empty;
+        // TODO: Find and apply the default color.
         public SolidColorBrush ForegroundColorBrush { get; set; } = Brushes.Black;
+        public SolidColorBrush BackgroundColorBrush { get; set; } = Brushes.White;
     }
 
     public class FileInfo
@@ -100,8 +104,23 @@ namespace media_info_project_ng
                     detail.Audio2Language = AudioInfos[1].Language;
                 }
                 detail.HasChapter = GeneralInfo.MenuCount > 0 ? "有" : "";
-                // TODO: Apply it!
-                detail.ForegroundColorBrush = GeneralInfo.TextCount > 0 ? Brushes.Blue : detail.ForegroundColorBrush;
+                if (detail.Format == "Matroska" &&
+                    !new List<String> {".mkv", ".mka", ".mks"}.Contains(Path.GetExtension(GeneralInfo.FullPath))
+                    || detail.Format == "MPEG-4" &&
+                    !new List<String> {".mp4", ".m4a", ".m4v"}.Contains(Path.GetExtension(GeneralInfo.FullPath)))
+                {
+                    detail.ForegroundColorBrush = Brushes.White;
+                    detail.BackgroundColorBrush = Brushes.DarkRed;
+                }
+                else if (GeneralInfo.AudioCount > 2)
+                {
+                    detail.ForegroundColorBrush = Brushes.White;
+                    detail.BackgroundColorBrush = Brushes.DarkGreen;
+                }
+                else if (GeneralInfo.TextCount > 0)
+                {
+                    detail.ForegroundColorBrush = Brushes.Blue;
+                }
                 return detail;
             }
         }
@@ -114,6 +133,7 @@ namespace media_info_project_ng
             Summary = MI.Inform();
             {
                 GeneralInfo.Filename = MI.Get(StreamKind.General, 0, "FileName");
+                GeneralInfo.FullPath = url;
                 GeneralInfo.Format = MI.Get(StreamKind.General, 0, "Format");
                 GeneralInfo.Bitrate = MI.Get(StreamKind.General, 0, "OverallBitRate/String");
                 {
