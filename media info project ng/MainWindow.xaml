@@ -10,7 +10,7 @@
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中已有 {0} 个项目'}" />
+                    <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中有 {0} 个文件'}" />
                 </StatusBarItem>
             </StatusBar>
             <TextBlock />
@@ -32,9 +32,18 @@
                           SelectionMode="Single" ItemsSource="{Binding FileInfoDetails}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" />
+                        <DataGridTextColumn Header="容器" Binding="{Binding Format}" />
+                        <DataGridTextColumn Header="编码" Binding="{Binding VideoFormat}" />
+                        <DataGridTextColumn Header="分辨率" Binding="{Binding Resolution}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding VideoDepth}" />
                         <DataGridTextColumn Header="帧率" Binding="{Binding Fps}" />
-                        <DataGridTextColumn Header="音轨1格式" Binding="{Binding Format1}" />
-                        <DataGridTextColumn Header="音轨2格式" Binding="{Binding Format2}" />
+                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Audio1Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Audio1Depth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Audio1Language}" />
+                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Audio2Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Audio2Depth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Audio2Language}" />
+                        <DataGridTextColumn Header="章节" Binding="{Binding HasChapter}" />
                     </DataGrid.Columns>
                 </DataGrid>
 

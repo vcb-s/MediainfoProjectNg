@@ -12,10 +12,16 @@ namespace media_info_project_ng
     static class Utils
     {
 		// TODO: Determine what should be excluded
-        private static List<string> _excludedDirs = new List<string>
+        private static readonly List<string> ExcludeDirs = new List<string>
         {
             "CDs",
             "Scans"
+        };
+        private static readonly List<string> ExcludeExts = new List<string>
+        {
+            ".txt",
+            ".log",
+            ".torrent"
         };
 
         public static string LoadDirectory(string dir, ref FileInfoModel fileInfoModel)
@@ -23,11 +29,12 @@ namespace media_info_project_ng
             var str = string.Empty;
             foreach (var path in Directory.GetFiles(dir))
             {
+//                var Garbage = Path.GetExtension(path);
                 str += LoadFile(path, ref fileInfoModel);
             }
             foreach (var path in Directory.GetDirectories(dir))
             {
-                if (_excludedDirs.Contains(Path.GetFileName(path)))
+                if (ExcludeDirs.Contains(Path.GetFileName(path)))
                     continue;
                 str += LoadDirectory(path, ref fileInfoModel);
             }
@@ -36,6 +43,7 @@ namespace media_info_project_ng
 
         public static string LoadFile(string path, ref FileInfoModel fileInfoModel)
         {
+            if (ExcludeExts.Contains(Path.GetExtension(path))) return "";
             var sw = new Stopwatch();
             var length = new System.IO.FileInfo(path).Length;
             sw.Start();
