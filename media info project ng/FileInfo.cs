@@ -223,6 +223,14 @@ namespace media_info_project_ng
             OnPropertyChanged(nameof(ItemsCount));
         }
 
+        public void RemoveItem(int index)
+        {
+            FileInfos.RemoveAt(index);
+
+            OnPropertyChanged(nameof(FileInfoDetails));
+            OnPropertyChanged(nameof(ItemsCount));
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

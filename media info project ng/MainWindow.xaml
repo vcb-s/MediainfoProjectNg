@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
 
-                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
+                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
                 <DataGrid x:Name="DataGrid1" Grid.Column="0"
                           HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
@@ -29,6 +29,7 @@
                           AutoGenerateColumns="False" SelectionUnit="FullRow" AllowDrop="True"
                           SelectionChanged="DataGrid1_OnSelectionChanged" Drop="DataGrid1_OnDrop"
                           DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
+                          PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
                           SelectionMode="Single" ItemsSource="{Binding FileInfoDetails}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" />
@@ -70,7 +71,8 @@
                                 Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
                     </Grid>
                     <TextBox x:Name="TxtBox" Grid.Row="1" HorizontalAlignment="Stretch"
-                             VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
                              AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" />
 
                 </Grid>

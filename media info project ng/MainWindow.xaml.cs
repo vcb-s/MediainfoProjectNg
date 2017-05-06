@@ -24,13 +24,18 @@ namespace media_info_project_ng
             InitializeComponent();
             DataGrid1.DataContext = _fileInfoModel;
             StatusBlock.DataContext = _fileInfoModel;
-//            var MI = new MediaInfo();
-//            var toDisplay = MI.Option("Info_Version");
-//            if (toDisplay.Length == 0)
-//            {
-//                toDisplay = "MediaInfo.Dll: this version of the DLL is not compatible";
-//            }
-//            StatusBlock.Text = toDisplay;
+            //            var MI = new MediaInfo();
+            //            var toDisplay = MI.Option("Info_Version");
+            //            if (toDisplay.Length == 0)
+            //            {
+            //                toDisplay = "MediaInfo.Dll: this version of the DLL is not compatible";
+            //            }
+            //            StatusBlock.Text = toDisplay;
+#if DEBUG
+            Button1.IsEnabled = true;
+#else
+            Button1.IsEnabled = false;
+#endif
         }
 
         private void Button1_Click(object sender, RoutedEventArgs e)
@@ -73,14 +78,9 @@ namespace media_info_project_ng
 
         private void DataGrid1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                TxtBox.Text = _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                TxtBox.Text = "";
-            }
+            TxtBox.Text = DataGrid1.SelectedIndex == -1
+                ? ""
+                : _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
@@ -127,6 +127,11 @@ namespace media_info_project_ng
             {
                 ((DataGrid) sender).UnselectAll();
             }
+        }
+
+        private void DataGrid1_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            _fileInfoModel.RemoveItem(DataGrid1.SelectedIndex);
         }
     }
 }
