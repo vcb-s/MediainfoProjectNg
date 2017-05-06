@@ -31,7 +31,7 @@
                           DragEnter="DataGrid1_OnDragEnter"
                           SelectionMode="Single" ItemsSource="{Binding FileInfoDetails}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" Width="250" />
+                        <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" />
                         <DataGridTextColumn Header="帧率" Binding="{Binding Fps}" />
                         <DataGridTextColumn Header="音轨1格式" Binding="{Binding Format1}" />
                         <DataGridTextColumn Header="音轨2格式" Binding="{Binding Format2}" />

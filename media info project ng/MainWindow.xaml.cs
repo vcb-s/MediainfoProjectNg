@@ -16,7 +16,7 @@ namespace media_info_project_ng
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly FileInfoModel _fileInfoModel = new FileInfoModel();
+        private FileInfoModel _fileInfoModel = new FileInfoModel();
 
         public MainWindow()
         {
@@ -90,19 +90,27 @@ namespace media_info_project_ng
 
         private void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
+            TxtBox.Text = string.Empty;
+            var sw = new Stopwatch();
             var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (paths == null) return;
+            sw.Start();
             foreach (var path in paths)
             {
-                if (File.GetAttributes(path) != FileAttributes.Archive) continue;
-                var sw = new Stopwatch();
-                var length = new System.IO.FileInfo(path).Length;
-                sw.Start();
-                _fileInfoModel.AddItems(new List<string> {path});
-                sw.Stop();
-                TxtBox.Text += "Loading: " + path + "\r\nCost " + sw.ElapsedMilliseconds + "ms! Length: " + length +
-                               "bytes \r\n";
+                switch (File.GetAttributes(path))
+                {
+                    case FileAttributes.Archive:
+                    {
+                        TxtBox.Text += Utils.LoadFile(path, ref _fileInfoModel);
+                        break;
+                    }
+                    case FileAttributes.Directory:
+                        TxtBox.Text += Utils.LoadDirectory(path, ref _fileInfoModel);
+                        break;
+                }
             }
+            sw.Stop();
+            TxtBox.Text += $"\r\nTotal time cost: {sw.ElapsedMilliseconds}ms\r\n";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
