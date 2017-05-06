@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using MediaInfoLib;
 
 namespace media_info_project_ng
@@ -16,21 +17,25 @@ namespace media_info_project_ng
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly FileInfoModel _fileInfoModel = new FileInfoModel();
+        private FileInfoModel _fileInfoModel = new FileInfoModel();
 
         public MainWindow()
         {
             InitializeComponent();
-//            DataGrid1.ItemsSource = _fileInfoModel.FileInfoDetails;
             DataGrid1.DataContext = _fileInfoModel;
             StatusBlock.DataContext = _fileInfoModel;
-//            var MI = new MediaInfo();
-//            var toDisplay = MI.Option("Info_Version");
-//            if (toDisplay.Length == 0)
-//            {
-//                toDisplay = "MediaInfo.Dll: this version of the DLL is not compatible";
-//            }
-//            StatusBlock.Text = toDisplay;
+            //            var MI = new MediaInfo();
+            //            var toDisplay = MI.Option("Info_Version");
+            //            if (toDisplay.Length == 0)
+            //            {
+            //                toDisplay = "MediaInfo.Dll: this version of the DLL is not compatible";
+            //            }
+            //            StatusBlock.Text = toDisplay;
+#if DEBUG
+            Button1.IsEnabled = true;
+#else
+            Button1.IsEnabled = false;
+#endif
         }
 
         private void Button1_Click(object sender, RoutedEventArgs e)
@@ -73,34 +78,60 @@ namespace media_info_project_ng
 
         private void DataGrid1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                TxtBox.Text = _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                TxtBox.Text = "";
-            }
+            TxtBox.Text = DataGrid1.SelectedIndex == -1
+                ? ""
+                : _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             _fileInfoModel.Clear();
+            TxtBox.Text = "";
         }
 
         private void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
-            
-                var paths = new List<string>(e.Data.GetData(DataFormats.FileDrop) as string[]);
-                var FA = paths?.Select(path => File.GetAttributes(path)).ToList();
-            
-            
+            TxtBox.Text = string.Empty;
+            var sw = new Stopwatch();
+            var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (paths == null) return;
+            sw.Start();
+            foreach (var path in paths)
+            {
+                switch (File.GetAttributes(path))
+                {
+                    case FileAttributes.Archive:
+                    {
+                        TxtBox.Text += Utils.LoadFile(path, ref _fileInfoModel);
+                        break;
+                    }
+                    case FileAttributes.Directory:
+                        TxtBox.Text += Utils.LoadDirectory(path, ref _fileInfoModel);
+                        break;
+                }
+            }
+            sw.Stop();
+            TxtBox.Text += $"\r\nTotal time cost: {sw.ElapsedMilliseconds}ms\r\n";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
         {
-            // TODO: It doesn't work!!!!
+            // TODO: It doesn't work!!!! 
+            // Edited: May work, but no effect on the mouse cursor
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.All : DragDropEffects.None;
+        }
+
+        private void DataGrid1_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is ScrollViewer)
+            {
+                ((DataGrid) sender).UnselectAll();
+            }
+        }
+
+        private void DataGrid1_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            _fileInfoModel.RemoveItem(DataGrid1.SelectedIndex);
         }
     }
 }

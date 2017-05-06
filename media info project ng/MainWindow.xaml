@@ -5,37 +5,53 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:media_info_project_ng"
         mc:Ignorable="d"
-        Title="media info project ng" Height="350" Width="800" MinWidth="800">
+        Title="media info project ng" Height="400" Width="800" MinWidth="800" MinHeight="350">
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中已有 {0} 个项目'}" />
+                    <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中有 {0} 个文件'}" />
                 </StatusBarItem>
             </StatusBar>
             <TextBlock />
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="200" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="350" MinWidth="350" />
+                    <ColumnDefinition Width="2" />
+                    <ColumnDefinition Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
-                
-                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
                 <DataGrid x:Name="DataGrid1" Grid.Column="0"
                           HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           IsReadOnly="True" Margin="2" HeadersVisibility="Column" CanUserAddRows="False"
                           AutoGenerateColumns="False" SelectionUnit="FullRow" AllowDrop="True"
                           SelectionChanged="DataGrid1_OnSelectionChanged" Drop="DataGrid1_OnDrop"
-                          DragEnter="DataGrid1_OnDragEnter"
+                          DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
+                          PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
                           SelectionMode="Single" ItemsSource="{Binding FileInfoDetails}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" Width="250" />
+                        <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" />
+                        <DataGridTextColumn Header="容器" Binding="{Binding Format}" />
+                        <DataGridTextColumn Header="编码" Binding="{Binding VideoFormat}" />
+                        <DataGridTextColumn Header="分辨率" Binding="{Binding Resolution}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding VideoDepth}" />
                         <DataGridTextColumn Header="帧率" Binding="{Binding Fps}" />
-                        <DataGridTextColumn Header="音轨1格式" Binding="{Binding Format1}" />
-                        <DataGridTextColumn Header="音轨2格式" Binding="{Binding Format2}" />
+                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Audio1Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Audio1Depth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Audio1Language}" />
+                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Audio2Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Audio2Depth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Audio2Language}" />
+                        <DataGridTextColumn Header="章节" Binding="{Binding HasChapter}" />
                     </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Foreground" Value="{Binding ForegroundColorBrush}" />
+                            <Setter Property="Background" Value="{Binding BackgroundColorBrush}" />
+                        </Style>
+                    </DataGrid.RowStyle>
                 </DataGrid>
 
                 <!-- TODO: Fix the overflow problem when dragging the splitter -->
@@ -55,7 +71,8 @@
                                 Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
                     </Grid>
                     <TextBox x:Name="TxtBox" Grid.Row="1" HorizontalAlignment="Stretch"
-                             VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
                              AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" />
 
                 </Grid>
