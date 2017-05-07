@@ -29,7 +29,6 @@ namespace mediainfo_project_ng
             var str = string.Empty;
             foreach (var path in Directory.GetFiles(dir))
             {
-//                var Garbage = Path.GetExtension(path);
                 str += LoadFile(path, ref fileInfoModel);
             }
             foreach (var path in Directory.GetDirectories(dir))
@@ -43,6 +42,7 @@ namespace mediainfo_project_ng
 
         public static string LoadFile(string path, ref FileInfoModel fileInfoModel)
         {
+            if (!File.Exists(path)) return "";
             if (ExcludeExts.Contains(Path.GetExtension(path))) return "";
             var sw = new Stopwatch();
             var length = new System.IO.FileInfo(path).Length;

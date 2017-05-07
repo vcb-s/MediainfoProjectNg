@@ -45,6 +45,7 @@
                         <DataGridTextColumn Header="位深" Binding="{Binding Audio2Depth}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Audio2Language}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding HasChapter}" />
+                        <DataGridTextColumn Header="完整路径" Binding="{Binding FullPath}"></DataGridTextColumn>
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
@@ -66,7 +67,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Button x:Name="Button1" Grid.Row="0" HorizontalAlignment="Stretch"
-                                Content="Load!" VerticalAlignment="Stretch" Margin="2" Click="Button1_Click" />
+                                Content="Debug!" VerticalAlignment="Stretch" Margin="2" Click="Button1_Click" />
                         <Button x:Name="Button2" Grid.Row="1" HorizontalAlignment="Stretch"
                                 Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
                     </Grid>

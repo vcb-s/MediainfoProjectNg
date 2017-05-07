@@ -84,7 +84,8 @@ namespace mediainfo_project_ng
                 var detail = new FileInfoDetail()
                 {
                     Filename = GeneralInfo.Filename,
-                    Format = GeneralInfo.Format
+                    Format = GeneralInfo.Format,
+                    FullPath = GeneralInfo.FullPath
                 };
                 if (GeneralInfo.VideoCount > 0)
                 {
@@ -107,9 +108,9 @@ namespace mediainfo_project_ng
                 }
                 detail.HasChapter = GeneralInfo.MenuCount > 0 ? "有" : "";
                 if (detail.Format == "Matroska" &&
-                    !new List<String> {".mkv", ".mka", ".mks"}.Contains(Path.GetExtension(GeneralInfo.FullPath))
+                    !new List<string> {".mkv", ".mka", ".mks"}.Contains(Path.GetExtension(GeneralInfo.FullPath))
                     || detail.Format == "MPEG-4" &&
-                    !new List<String> {".mp4", ".m4a", ".m4v"}.Contains(Path.GetExtension(GeneralInfo.FullPath)))
+                    !new List<string> {".mp4", ".m4a", ".m4v"}.Contains(Path.GetExtension(GeneralInfo.FullPath)))
                 {
                     detail.ForegroundColorBrush = Brushes.White;
                     detail.BackgroundColorBrush = Brushes.DarkRed;

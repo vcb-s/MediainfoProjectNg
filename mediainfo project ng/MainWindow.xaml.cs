@@ -40,12 +40,12 @@ namespace mediainfo_project_ng
 
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
+#if DEBUG
             var sw = new Stopwatch();
             var toDisplay = string.Empty;
 
-            sw.Start();
-
-            _fileInfoModel.AddItems(new List<string>
+            // TODO: Make it in config file
+            var fileList = new List<string>
             {
                 @"D:\Hanasaku\[Liuyun&VCB-S]HanaSaku Iroha[18][Hi10p_1080p][BDRip][x264_flac_ac3].mkv",
                 @"D:\Videos\[HorribleSubs] Zero kara Hajimeru Mahou no Sho - 04 [1080p].mkv",
@@ -62,17 +62,20 @@ namespace mediainfo_project_ng
                 @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [07][Ma10p_1080p][x265_flac].mkv",
                 @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [08][Ma10p_1080p][x265_flac].mkv",
                 @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [09][Ma10p_1080p][x265_flac].mkv",
-            });
+            };
+            var before = _fileInfoModel.ItemsCount;
 
+            sw.Start();
+            toDisplay = fileList.Aggregate(toDisplay, (current, path) => current + Utils.LoadFile(path, ref _fileInfoModel));
             sw.Stop();
 
             toDisplay += $"Elapsed {sw.ElapsedMilliseconds}ms\r\n";
-
-            toDisplay += $"Count: {_fileInfoModel.ItemsCount}\r\n";
+            toDisplay += $"Count: {_fileInfoModel.ItemsCount - before}\r\n";
 
             TxtBox.Text = toDisplay;
-//            var binding = new Binding {Source = $"列表中已有 {_fileInfoModel.ItemsCount} 个项目"};
-//            StatusBlock.SetBinding(TextBlock.TextProperty, binding);
+            // var binding = new Binding {Source = $"列表中已有 {_fileInfoModel.ItemsCount} 个项目"};
+            // StatusBlock.SetBinding(TextBlock.TextProperty, binding);
+#endif
         }
 
 
@@ -96,6 +99,7 @@ namespace mediainfo_project_ng
             var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (paths == null) return;
             sw.Start();
+            // TODO: Start a new thread to prevent UI freeze
             foreach (var path in paths)
             {
                 switch (File.GetAttributes(path))
