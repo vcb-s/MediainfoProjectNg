@@ -134,7 +134,7 @@ namespace mediainfo_project_ng
             MI.Option("Complete");
             Summary = MI.Inform();
             {
-                GeneralInfo.Filename = MI.Get(StreamKind.General, 0, "FileName");
+                GeneralInfo.Filename = Path.GetFileNameWithoutExtension(url);
                 GeneralInfo.FullPath = url;
                 GeneralInfo.Format = MI.Get(StreamKind.General, 0, "Format");
                 GeneralInfo.Bitrate = MI.Get(StreamKind.General, 0, "OverallBitRate/String");
@@ -189,7 +189,7 @@ namespace mediainfo_project_ng
                 });
             }
 
-            var a = new DataGridRow();
+            MI.Close();
         }
     }
 
