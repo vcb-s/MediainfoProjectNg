@@ -81,9 +81,11 @@ namespace media_info_project_ng
         {
             get
             {
-                var detail = new FileInfoDetail();
-                detail.Filename = GeneralInfo.Filename;
-                detail.Format = GeneralInfo.Format;
+                var detail = new FileInfoDetail()
+                {
+                    Filename = GeneralInfo.Filename,
+                    Format = GeneralInfo.Format
+                };
                 if (GeneralInfo.VideoCount > 0)
                 {
                     detail.VideoFormat = VideoInfos[0].Format;

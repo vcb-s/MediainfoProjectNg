@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:media_info_project_ng"
         mc:Ignorable="d"
-        Title="media info project ng" Height="400" Width="800" MinWidth="800" MinHeight="350">
+        Title="media info project ng" Height="400" Width="800" MinWidth="800" MinHeight="350"
+        ResizeMode="CanResizeWithGrip">
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
@@ -13,7 +14,6 @@
                     <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中有 {0} 个文件'}" />
                 </StatusBarItem>
             </StatusBar>
-            <TextBlock />
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="200" />
@@ -72,7 +72,7 @@
                     </Grid>
                     <TextBox x:Name="TxtBox" Grid.Row="1" HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
-                             HorizontalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
                              AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" />
 
                 </Grid>
