@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediaInfoLib;
 
-namespace media_info_project_ng
+namespace mediainfo_project_ng
 {
     static class Utils
     {

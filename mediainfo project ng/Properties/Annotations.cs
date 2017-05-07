@@ -30,7 +30,7 @@ using System;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
 
-namespace media_info_project_ng.Annotations
+namespace mediainfo_project_ng.Annotations
 {
   /// <summary>
   /// Indicates that the value of the marked element could be <c>null</c> sometimes,

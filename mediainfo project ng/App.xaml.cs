@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace media_info_project_ng
+namespace mediainfo_project_ng
 {
     /// <summary>
     /// App.xaml 的交互逻辑

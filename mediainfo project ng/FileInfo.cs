@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using media_info_project_ng.Annotations;
+using mediainfo_project_ng.Annotations;
 using MediaInfoLib;
 
-namespace media_info_project_ng
+namespace mediainfo_project_ng
 {
     public class GeneralInfo
     {

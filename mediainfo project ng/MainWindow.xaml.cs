@@ -10,7 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using MediaInfoLib;
 
-namespace media_info_project_ng
+namespace mediainfo_project_ng
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
