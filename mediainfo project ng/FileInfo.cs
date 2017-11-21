@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
 using MediaInfoLib;
 
 namespace mediainfo_project_ng
@@ -57,67 +48,63 @@ namespace mediainfo_project_ng
 
         public FileInfo(string url)
         {
-            var MI = new MediaInfo();
-            MI.Open(url);
-            MI.Option("Complete");
-            Summary = MI.Inform();
+#if DEBUG
+            var length = new System.IO.FileInfo(url).Length;
+            var sw = new Stopwatch();
+            sw.Start();
+#endif
+            MediaInfo MI = null;
+            try
             {
-                GeneralInfo.Filename = Path.GetFileNameWithoutExtension(url);
-                GeneralInfo.FullPath = url;
-                GeneralInfo.Format = MI.Get(StreamKind.General, 0, "Format");
-                GeneralInfo.Bitrate = MI.Get(StreamKind.General, 0, "OverallBitRate/String");
+                MI = new MediaInfo();
+                MI.Open(url);
+                MI.Option("Complete");
+                Summary = MI.Inform();
+
+                GeneralInfo.Filename   = Path.GetFileNameWithoutExtension(url);
+                GeneralInfo.FullPath   = url;
+                GeneralInfo.Format     = MI.Get(StreamKind.General, 0, "Format");
+                GeneralInfo.Bitrate    = MI.Get(StreamKind.General, 0, "OverallBitRate/String");
+                GeneralInfo.VideoCount = MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsInt();
+                GeneralInfo.AudioCount = MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsInt();
+                GeneralInfo.TextCount  = MI.Get(StreamKind.General, 0, "TextCount").TryParseAsInt();
+                GeneralInfo.MenuCount  = MI.Get(StreamKind.General, 0, "MenuCount").TryParseAsInt();
+
+                for (var i = 0; i < GeneralInfo.VideoCount; i++)
                 {
-                    GeneralInfo.VideoCount = int.TryParse(MI.Get(StreamKind.General, 0, "VideoCount"), out var i)
-                        ? i
-                        : 0;
+                    VideoInfos.Add(new VideoInfo
+                    {
+                        Format        = MI.Get(StreamKind.Video, i, "Format"),
+                        FormatProfile = MI.Get(StreamKind.Video, i, "Format_Profile"),
+                        Fps           = MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
+                        Bitrate       = MI.Get(StreamKind.Video, i, "BitRate"),
+                        BitDepth      = MI.Get(StreamKind.Video, i, "BitDepth"),
+                        Duration      = MI.Get(StreamKind.Video, i, "Duration"),
+                        Height        = MI.Get(StreamKind.Video, i, "Height"),
+                        Width         = MI.Get(StreamKind.Video, i, "Width"),
+                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper()
+                    });
                 }
+
+                for (var i = 0; i < GeneralInfo.AudioCount; i++)
                 {
-                    GeneralInfo.AudioCount = int.TryParse(MI.Get(StreamKind.General, 0, "AudioCount"), out var i)
-                        ? i
-                        : 0;
-                }
-                {
-                    GeneralInfo.TextCount = int.TryParse(MI.Get(StreamKind.General, 0, "TextCount"), out var i)
-                        ? i
-                        : 0;
-                }
-                {
-                    GeneralInfo.MenuCount = int.TryParse(MI.Get(StreamKind.General, 0, "MenuCount"), out var i)
-                        ? i
-                        : 0;
+                    AudioInfos.Add(new AudioInfo
+                    {
+                        Format   = MI.Get(StreamKind.Audio, i, "Format"),
+                        BitDepth = MI.Get(StreamKind.Audio, i, "BitDepth"),
+                        Bitrate  = (MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsInt() / 1000).ToString(),
+                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper()
+                    });
                 }
             }
-
-            for (var i = 0; i < GeneralInfo.VideoCount; i++)
+            finally
             {
-                VideoInfos.Add(new VideoInfo
-                {
-                    Format = MI.Get(StreamKind.Video, i, "Format"),
-                    FormatProfile = MI.Get(StreamKind.Video, i, "Format_Profile"),
-                    Fps = MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
-                    Bitrate = MI.Get(StreamKind.Video, i, "BitRate"),
-                    BitDepth = MI.Get(StreamKind.Video, i, "BitDepth"),
-                    Duration = MI.Get(StreamKind.Video, i, "Duration"),
-                    Height = MI.Get(StreamKind.Video, i, "Height"),
-                    Width = MI.Get(StreamKind.Video, i, "Width"),
-                    Language = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper()
-                });
+                MI?.Close();
             }
-
-            for (var i = 0; i < GeneralInfo.AudioCount; i++)
-            {
-                AudioInfos.Add(new AudioInfo
-                {
-                    Format = MI.Get(StreamKind.Audio, i, "Format"),
-                    BitDepth = MI.Get(StreamKind.Audio, i, "BitDepth"),
-                    Bitrate = MI.Get(StreamKind.Audio, i, "BitRate") == ""
-                        ? ""
-                        : (int.Parse(MI.Get(StreamKind.Audio, i, "BitRate")) / 1000).ToString(),
-                    Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper()
-                });
-            }
-
-            MI.Close();
+#if DEBUG
+            sw.Stop();
+            Debug.WriteLine($"Loading: {url}\r\nCost {sw.ElapsedMilliseconds}ms! Length: {length}bytes");
+#endif
         }
     }
 }
