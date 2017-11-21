@@ -34,7 +34,8 @@ namespace mediainfo_project_ng
                 }
                 else
                 {
-                    _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
+                    var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                    _mainWindowViewModel.TitleString = $"mediainfo project ng {v} [Mediainfo: {version.Substring(15)}]";
                     _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
                 }
             }
@@ -42,8 +43,6 @@ namespace mediainfo_project_ng
             {
                 MI?.Close();
             }
-
-            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 #if DEBUG
             Button1.IsEnabled = true;
 #else
