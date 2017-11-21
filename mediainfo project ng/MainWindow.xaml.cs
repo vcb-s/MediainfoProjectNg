@@ -47,21 +47,9 @@ namespace mediainfo_project_ng
             // TODO: Make it in config file
             var fileList = new List<string>
             {
-                @"D:\Hanasaku\[Liuyun&VCB-S]HanaSaku Iroha[18][Hi10p_1080p][BDRip][x264_flac_ac3].mkv",
-                @"D:\Videos\[HorribleSubs] Zero kara Hajimeru Mahou no Sho - 04 [1080p].mkv",
-                @"D:\LLSS67\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [10][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS67\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [11][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS67\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [12][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS67\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [13][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [01v2][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [02][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [03][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [04][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [05][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [06][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [07][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [08][Ma10p_1080p][x265_flac].mkv",
-                @"D:\LLSS\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [Ma10p_1080p]\[Nyamazing&VCB-Studio] LoveLive! Sunshine!! [09][Ma10p_1080p][x265_flac].mkv",
+                @"C:\Users\Mark\Videos\[LoliHouse] Sakura Quest - 18 [WebRip 1920x1080 HEVC-yuv420p10 AAC].mkv",
+                @"C:\Users\Mark\Videos\京吹S2\[VCB-Studio] Hibike! Euphonium 2 [Ma10p_1080p]\[VCB-Studio] Hibike! Euphonium 2 [03][Ma10p_1080p][x265_flac_2aac].mkv",
+                @"C:\Users\Mark\Videos\[SweetSub&LoliHouse] Flip Flappers [WebRip 1920x1080 HEVC-yuv420p10 AAC]\[SweetSub&LoliHouse] Flip Flappers - 01 [WebRip 1920x1080 HEVC-yuv420p10 AAC].mkv",
             };
             var before = _fileInfoModel.ItemsCount;
 
@@ -81,6 +69,7 @@ namespace mediainfo_project_ng
 
         private void DataGrid1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // TODO: Fix the problem after sorting in View
             TxtBox.Text = DataGrid1.SelectedIndex == -1
                 ? ""
                 : _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
@@ -102,17 +91,10 @@ namespace mediainfo_project_ng
             // TODO: Start a new thread to prevent UI freeze
             foreach (var path in paths)
             {
-                switch (File.GetAttributes(path))
-                {
-                    case FileAttributes.Archive:
-                    {
-                        TxtBox.Text += Utils.LoadFile(path, ref _fileInfoModel);
-                        break;
-                    }
-                    case FileAttributes.Directory:
-                        TxtBox.Text += Utils.LoadDirectory(path, ref _fileInfoModel);
-                        break;
-                }
+                if (File.Exists(path))
+                    TxtBox.Text += Utils.LoadFile(path, ref _fileInfoModel);
+                else if (Directory.Exists(path))
+                    TxtBox.Text += Utils.LoadDirectory(path, ref _fileInfoModel);
             }
             sw.Stop();
             TxtBox.Text += $"\r\nTotal time cost: {sw.ElapsedMilliseconds}ms\r\n";

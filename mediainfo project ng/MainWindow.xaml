@@ -45,7 +45,7 @@
                         <DataGridTextColumn Header="位深" Binding="{Binding Audio2Depth}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Audio2Language}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding HasChapter}" />
-                        <DataGridTextColumn Header="完整路径" Binding="{Binding FullPath}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="完整路径" Binding="{Binding FullPath}" />
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
