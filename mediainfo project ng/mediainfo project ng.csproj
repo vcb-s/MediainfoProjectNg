@@ -97,6 +97,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\ChapterCountToStateConverter.cs" />
+    <Compile Include="Converter\InfoToBackgroundConverter.cs" />
+    <Compile Include="Converter\InfoToForegroundConverter.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

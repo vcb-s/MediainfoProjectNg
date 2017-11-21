@@ -24,30 +24,30 @@ namespace mediainfo_project_ng
             ".torrent"
         };
 
-        public static string LoadDirectory(string dir, ref FileInfoModel fileInfoModel)
+        public static string LoadDirectory(string dir, ref FileInfos fileInfos)
         {
             var str = string.Empty;
             foreach (var path in Directory.GetFiles(dir))
             {
-                str += LoadFile(path, ref fileInfoModel);
+                str += LoadFile(path, ref fileInfos);
             }
             foreach (var path in Directory.GetDirectories(dir))
             {
                 if (ExcludeDirs.Contains(Path.GetFileName(path)))
                     continue;
-                str += LoadDirectory(path, ref fileInfoModel);
+                str += LoadDirectory(path, ref fileInfos);
             }
             return str;
         }
 
-        public static string LoadFile(string path, ref FileInfoModel fileInfoModel)
+        public static string LoadFile(string path, ref FileInfos fileInfos)
         {
             if (!File.Exists(path)) return "";
             if (ExcludeExts.Contains(Path.GetExtension(path))) return "";
             var sw = new Stopwatch();
             var length = new System.IO.FileInfo(path).Length;
             sw.Start();
-            fileInfoModel.AddItems(new List<string> {path});
+            fileInfos.AddItems(new List<string> {path});
             sw.Stop();
             return "Loading: " + path + "\r\nCost " + sw.ElapsedMilliseconds + "ms! Length: " +
                    length +

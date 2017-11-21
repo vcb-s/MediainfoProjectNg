@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using MediaInfoLib;
+using static System.String;
 
 namespace mediainfo_project_ng
 {
@@ -17,20 +18,26 @@ namespace mediainfo_project_ng
     /// </summary>
     public partial class MainWindow : Window
     {
-        private FileInfoModel _fileInfoModel = new FileInfoModel();
+        private FileInfos _fileInfos;
+
+        // TODO: Proper data binding for statusString.
+        private string _statusString;
 
         public MainWindow()
         {
             InitializeComponent();
-            DataGrid1.DataContext = _fileInfoModel;
-            StatusBlock.DataContext = _fileInfoModel;
-            //            var MI = new MediaInfo();
-            //            var toDisplay = MI.Option("Info_Version");
-            //            if (toDisplay.Length == 0)
-            //            {
-            //                toDisplay = "MediaInfo.Dll: this version of the DLL is not compatible";
-            //            }
-            //            StatusBlock.Text = toDisplay;
+            _fileInfos = (FileInfos) FindResource("FileInfos");
+            var MI = new MediaInfo();
+            var toDisplay = MI.Option("Info_Version");
+            if (toDisplay.Length == 0)
+            {
+                toDisplay = " [Mediainfo: Unavailable]";
+            }
+            else
+            {
+                toDisplay = $" [Mediainfo: {toDisplay.Substring(15)}]";
+            }
+            Window1.Title += toDisplay;
 #if DEBUG
             Button1.IsEnabled = true;
 #else
@@ -42,48 +49,36 @@ namespace mediainfo_project_ng
         {
 #if DEBUG
             var sw = new Stopwatch();
-            var toDisplay = string.Empty;
+            _statusString = Empty;
 
             // TODO: Make it in config file
             var fileList = new List<string>
             {
-                @"C:\Users\Mark\Videos\[LoliHouse] Sakura Quest - 18 [WebRip 1920x1080 HEVC-yuv420p10 AAC].mkv",
-                @"C:\Users\Mark\Videos\京吹S2\[VCB-Studio] Hibike! Euphonium 2 [Ma10p_1080p]\[VCB-Studio] Hibike! Euphonium 2 [03][Ma10p_1080p][x265_flac_2aac].mkv",
-                @"C:\Users\Mark\Videos\[SweetSub&LoliHouse] Flip Flappers [WebRip 1920x1080 HEVC-yuv420p10 AAC]\[SweetSub&LoliHouse] Flip Flappers - 01 [WebRip 1920x1080 HEVC-yuv420p10 AAC].mkv",
+                @"C:\Users\Mark\Desktop\doc_2017-11-21_12-42-55.mp4",
+                @"C:\Users\Mark\Desktop\K-ON!_06mp4.mp4"
             };
-            var before = _fileInfoModel.ItemsCount;
+            var before = _fileInfos.Count;
 
             sw.Start();
-            toDisplay = fileList.Aggregate(toDisplay, (current, path) => current + Utils.LoadFile(path, ref _fileInfoModel));
+            foreach (var path in fileList) {
+                Utils.LoadFile(path, ref _fileInfos);
+            }
             sw.Stop();
 
-            toDisplay += $"Elapsed {sw.ElapsedMilliseconds}ms\r\n";
-            toDisplay += $"Count: {_fileInfoModel.ItemsCount - before}\r\n";
-
-            TxtBox.Text = toDisplay;
-            // var binding = new Binding {Source = $"列表中已有 {_fileInfoModel.ItemsCount} 个项目"};
-            // StatusBlock.SetBinding(TextBlock.TextProperty, binding);
+            _statusString += $"Elapsed {sw.ElapsedMilliseconds}ms ";
+            _statusString += $"Count: {_fileInfos.Count - before}";
 #endif
-        }
-
-
-        private void DataGrid1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // TODO: Fix the problem after sorting in View
-            TxtBox.Text = DataGrid1.SelectedIndex == -1
-                ? ""
-                : _fileInfoModel.FileInfos[DataGrid1.SelectedIndex].Summary;
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
-            _fileInfoModel.Clear();
-            TxtBox.Text = "";
+            _fileInfos.Clear();
+            _statusString = "";
         }
 
         private void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
-            TxtBox.Text = string.Empty;
+            _statusString = Empty;
             var sw = new Stopwatch();
             var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (paths == null) return;
@@ -92,12 +87,12 @@ namespace mediainfo_project_ng
             foreach (var path in paths)
             {
                 if (File.Exists(path))
-                    TxtBox.Text += Utils.LoadFile(path, ref _fileInfoModel);
+                    Utils.LoadFile(path, ref _fileInfos);
                 else if (Directory.Exists(path))
-                    TxtBox.Text += Utils.LoadDirectory(path, ref _fileInfoModel);
+                    Utils.LoadDirectory(path, ref _fileInfos);
             }
             sw.Stop();
-            TxtBox.Text += $"\r\nTotal time cost: {sw.ElapsedMilliseconds}ms\r\n";
+            _statusString += $"Total time cost: {sw.ElapsedMilliseconds}ms";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
@@ -117,8 +112,9 @@ namespace mediainfo_project_ng
 
         private void DataGrid1_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // TODO: Find a refined way (About synchronize)
             if (e.Key != Key.Delete) return;
-            _fileInfoModel.RemoveItem(DataGrid1.SelectedIndex);
+            _fileInfos.Remove((FileInfo) DataGrid1.SelectedItem);
         }
     }
 }

@@ -4,17 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:mediainfo_project_ng"
+        xmlns:converter="clr-namespace:mediainfo_project_ng.Converter"
         mc:Ignorable="d"
         Title="mediainfo project ng" Height="400" Width="800" MinWidth="800" MinHeight="350"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="CanResizeWithGrip"
+        x:Name="Window1">
+    <Window.Resources>
+        <local:FileInfos x:Key="FileInfos" />
+        <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
+        <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
+        <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+    </Window.Resources>
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <TextBlock x:Name="StatusBlock" Text="{Binding ItemsCount, StringFormat='列表中有 {0} 个文件'}" />
+                    <TextBlock DataContext="{StaticResource FileInfos}" Text="{Binding Count}" />
                 </StatusBarItem>
             </StatusBar>
-            <Grid>
+            <Grid DataContext="{StaticResource FileInfos}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="200" />
                     <ColumnDefinition Width="2" />
@@ -27,35 +35,44 @@
                           VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           IsReadOnly="True" Margin="2" HeadersVisibility="Column" CanUserAddRows="False"
                           AutoGenerateColumns="False" SelectionUnit="FullRow" AllowDrop="True"
-                          SelectionChanged="DataGrid1_OnSelectionChanged" Drop="DataGrid1_OnDrop"
+                          Drop="DataGrid1_OnDrop"
                           DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
                           PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
-                          SelectionMode="Single" ItemsSource="{Binding FileInfoDetails}">
+                          SelectionMode="Single" ItemsSource="{Binding}"
+                          IsSynchronizedWithCurrentItem="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" />
-                        <DataGridTextColumn Header="容器" Binding="{Binding Format}" />
-                        <DataGridTextColumn Header="编码" Binding="{Binding VideoFormat}" />
-                        <DataGridTextColumn Header="分辨率" Binding="{Binding Resolution}" />
-                        <DataGridTextColumn Header="位深" Binding="{Binding VideoDepth}" />
-                        <DataGridTextColumn Header="帧率" Binding="{Binding Fps}" />
-                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Audio1Format}" />
-                        <DataGridTextColumn Header="位深" Binding="{Binding Audio1Depth}" />
-                        <DataGridTextColumn Header="语言" Binding="{Binding Audio1Language}" />
-                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Audio2Format}" />
-                        <DataGridTextColumn Header="位深" Binding="{Binding Audio2Depth}" />
-                        <DataGridTextColumn Header="语言" Binding="{Binding Audio2Language}" />
-                        <DataGridTextColumn Header="章节" Binding="{Binding HasChapter}" />
-                        <DataGridTextColumn Header="完整路径" Binding="{Binding FullPath}" />
+                        <DataGridTextColumn Header="文件名" Binding="{Binding Path=GeneralInfo.Filename}" />
+                        <DataGridTextColumn Header="容器" Binding="{Binding Path=GeneralInfo.Format}" />
+                        <DataGridTextColumn Header="编码" Binding="{Binding Path=VideoInfos[0].Format}" />
+                        <DataGridTextColumn Header="分辨率">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding StringFormat="{}{0}x{1}">
+                                    <Binding Path="VideoInfos[0].Width" />
+                                    <Binding Path="VideoInfos[0].Height" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0].Fps}" />
+                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[0].Language}" />
+                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=AudioInfos[1].Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
+                        <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.MenuCount,Converter={StaticResource ChapterCountToStateConverter}}" />
+                        <DataGridTextColumn Header="完整路径" Binding="{Binding Path=GeneralInfo.FullPath}" />
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="Foreground" Value="{Binding ForegroundColorBrush}" />
-                            <Setter Property="Background" Value="{Binding BackgroundColorBrush}" />
+                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
+                            <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
                         </Style>
                     </DataGrid.RowStyle>
                 </DataGrid>
 
                 <!-- TODO: Fix the overflow problem when dragging the splitter -->
+                <!-- Microsoft to blame! -->
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
@@ -71,15 +88,13 @@
                         <Button x:Name="Button2" Grid.Row="1" HorizontalAlignment="Stretch"
                                 Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
                     </Grid>
-                    <TextBox x:Name="TxtBox" Grid.Row="1" HorizontalAlignment="Stretch"
+                    <TextBox Grid.Row="1" HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
-                             AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" />
-
+                             AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" Text="{Binding Path=Summary,Mode=OneWay}" />
                 </Grid>
 
             </Grid>
         </DockPanel>
-
     </Grid>
 </Window>

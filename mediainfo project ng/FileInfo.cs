@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using mediainfo_project_ng.Annotations;
 using MediaInfoLib;
 
 namespace mediainfo_project_ng
@@ -49,84 +48,12 @@ namespace mediainfo_project_ng
         public string Language { get; set; }
     }
 
-    public class FileInfoDetail
-    {
-        public string Filename { get; set; } = string.Empty;
-        public string Format { get; set; } = string.Empty;
-        public string VideoFormat { get; set; } = string.Empty;
-        public string Resolution { get; set; } = string.Empty;
-        public string VideoDepth { get; set; } = string.Empty;
-        public string Fps { get; set; } = string.Empty;
-        public string Audio1Format { get; set; } = string.Empty;
-        public string Audio1Depth { get; set; } = string.Empty;
-        public string Audio1Language { get; set; } = string.Empty;
-        public string Audio2Format { get; set; } = string.Empty;
-        public string Audio2Depth { get; set; } = string.Empty;
-        public string Audio2Language { get; set; } = string.Empty;
-        public string HasChapter { get; set; } = string.Empty;
-        public string FullPath { get; set; } = string.Empty;
-        // TODO: Find and apply the default color.
-        public SolidColorBrush ForegroundColorBrush { get; set; } = Brushes.Black;
-        public SolidColorBrush BackgroundColorBrush { get; set; } = Brushes.White;
-    }
-
     public class FileInfo
     {
-        private GeneralInfo GeneralInfo { get; } = new GeneralInfo();
-        private List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
-        private List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
+        public GeneralInfo GeneralInfo { get; } = new GeneralInfo();
+        public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
+        public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public string Summary { get; }
-
-        public FileInfoDetail FileInfoDetail
-        {
-            get
-            {
-                var detail = new FileInfoDetail()
-                {
-                    Filename = GeneralInfo.Filename,
-                    Format = GeneralInfo.Format,
-                    FullPath = GeneralInfo.FullPath
-                };
-                if (GeneralInfo.VideoCount > 0)
-                {
-                    detail.VideoFormat = VideoInfos[0].Format;
-                    detail.Resolution = $"{VideoInfos[0].Width}x{VideoInfos[0].Height}";
-                    detail.VideoDepth = VideoInfos[0].BitDepth;
-                    detail.Fps = VideoInfos[0].Fps;
-                }
-                if (GeneralInfo.AudioCount > 0)
-                {
-                    detail.Audio1Format = AudioInfos[0].Format;
-                    detail.Audio1Depth = AudioInfos[0].BitDepth;
-                    detail.Audio1Language = AudioInfos[0].Language;
-                }
-                if (GeneralInfo.AudioCount > 1)
-                {
-                    detail.Audio2Format = AudioInfos[1].Format;
-                    detail.Audio2Depth = AudioInfos[1].BitDepth;
-                    detail.Audio2Language = AudioInfos[1].Language;
-                }
-                detail.HasChapter = GeneralInfo.MenuCount > 0 ? "有" : "";
-                if (detail.Format == "Matroska" &&
-                    !new List<string> {".mkv", ".mka", ".mks"}.Contains(Path.GetExtension(GeneralInfo.FullPath))
-                    || detail.Format == "MPEG-4" &&
-                    !new List<string> {".mp4", ".m4a", ".m4v"}.Contains(Path.GetExtension(GeneralInfo.FullPath)))
-                {
-                    detail.ForegroundColorBrush = Brushes.White;
-                    detail.BackgroundColorBrush = Brushes.DarkRed;
-                }
-                else if (GeneralInfo.AudioCount > 2)
-                {
-                    detail.ForegroundColorBrush = Brushes.White;
-                    detail.BackgroundColorBrush = Brushes.DarkGreen;
-                }
-                else if (GeneralInfo.TextCount > 0)
-                {
-                    detail.ForegroundColorBrush = Brushes.Blue;
-                }
-                return detail;
-            }
-        }
 
         public FileInfo(string url)
         {
@@ -194,52 +121,26 @@ namespace mediainfo_project_ng
         }
     }
 
-    public class FileInfoModel : INotifyPropertyChanged
+    public class FileInfos : ObservableCollection<FileInfo>
     {
-        public List<FileInfo> FileInfos { get; } = new List<FileInfo>();
-
-        public List<FileInfoDetail> FileInfoDetails => FileInfos.Select(fileInfo => fileInfo.FileInfoDetail).ToList();
-        public int ItemsCount => FileInfoDetails.Count;
-
-        public FileInfoModel()
+        public FileInfos()
         {
         }
 
-        public FileInfoModel(IEnumerable<string> urls)
+        public FileInfos(IEnumerable<string> urls)
         {
-            FileInfos.AddRange(urls.Select(url => new FileInfo(url)).ToList());
+            foreach (var url in urls)
+            {
+                this.Add(new FileInfo(url));
+            }
         }
 
         public void AddItems(IEnumerable<string> urls)
         {
-            FileInfos.AddRange(urls.Select(url => new FileInfo(url)).ToList());
-
-            OnPropertyChanged(nameof(FileInfoDetails));
-            OnPropertyChanged(nameof(ItemsCount));
-        }
-
-        public void Clear()
-        {
-            FileInfos.Clear();
-
-            OnPropertyChanged(nameof(FileInfoDetails));
-            OnPropertyChanged(nameof(ItemsCount));
-        }
-
-        public void RemoveItem(int index)
-        {
-            FileInfos.RemoveAt(index);
-
-            OnPropertyChanged(nameof(FileInfoDetails));
-            OnPropertyChanged(nameof(ItemsCount));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            foreach (var url in urls)
+            {
+                this.Add(new FileInfo(url));
+            }
         }
     }
 }
