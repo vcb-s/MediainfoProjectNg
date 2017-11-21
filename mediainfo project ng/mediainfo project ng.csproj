@@ -101,6 +101,7 @@
     <Compile Include="Converter\InfoToBackgroundConverter.cs" />
     <Compile Include="Converter\InfoToForegroundConverter.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="ViewModels.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
