@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5B677EC0-F097-4281-A0B3-F6251E269E24}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>media_info_project_ng</RootNamespace>
+    <RootNamespace>mediainfo_project_ng</RootNamespace>
     <AssemblyName>mediainfo project ng</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -74,7 +74,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>media_info_project_ng.App</StartupObject>
+    <StartupObject>mediainfo_project_ng.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -97,7 +97,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\ChapterCountToStateConverter.cs" />
+    <Compile Include="Converter\InfoToBackgroundConverter.cs" />
+    <Compile Include="Converter\InfoToForegroundConverter.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="ViewModels.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

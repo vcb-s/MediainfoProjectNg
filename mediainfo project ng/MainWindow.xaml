@@ -1,0 +1,103 @@
+﻿<Window x:Class="mediainfo_project_ng.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mediainfo_project_ng"
+        xmlns:converter="clr-namespace:mediainfo_project_ng.Converter"
+        mc:Ignorable="d"
+        Title="{Binding Path=TitleString,Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
+        ResizeMode="CanResizeWithGrip">
+    <Window.Resources>
+        <local:FileInfos x:Key="FileInfos" />
+        <local:MainWindowViewModel x:Key="WindowViewModel" />
+        <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
+        <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
+        <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem Width="600">
+                    <TextBlock Text="{Binding StatusString}" />
+                </StatusBarItem>
+                <StatusBarItem>
+                    <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
+                </StatusBarItem>
+            </StatusBar>
+            <Grid DataContext="{StaticResource FileInfos}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="200" />
+                    <ColumnDefinition Width="2" />
+                    <ColumnDefinition Width="320" MinWidth="320" />
+                </Grid.ColumnDefinitions>
+
+                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
+                <DataGrid x:Name="DataGrid1" Grid.Column="0"
+                          HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
+                          VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
+                          IsReadOnly="True" Margin="2" HeadersVisibility="Column" CanUserAddRows="False"
+                          AutoGenerateColumns="False" SelectionUnit="FullRow" AllowDrop="True"
+                          Drop="DataGrid1_OnDrop"
+                          DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
+                          PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
+                          SelectionMode="Single" ItemsSource="{Binding}"
+                          IsSynchronizedWithCurrentItem="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="文件名" Binding="{Binding Path=GeneralInfo.Filename}" />
+                        <DataGridTextColumn Header="容器" Binding="{Binding Path=GeneralInfo.Format}" />
+                        <DataGridTextColumn Header="编码" Binding="{Binding Path=VideoInfos[0].Format}" />
+                        <DataGridTextColumn Header="分辨率">
+                            <DataGridTextColumn.Binding>
+                                <MultiBinding StringFormat="{}{0}x{1}">
+                                    <Binding Path="VideoInfos[0].Width" />
+                                    <Binding Path="VideoInfos[0].Height" />
+                                </MultiBinding>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0].Fps}" />
+                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[0].Language}" />
+                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=AudioInfos[1].Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
+                        <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.MenuCount,Converter={StaticResource ChapterCountToStateConverter}}" />
+                        <DataGridTextColumn Header="完整路径" Binding="{Binding Path=GeneralInfo.FullPath}" />
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
+                            <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+
+                <!-- TODO: Fix the overflow problem when dragging the splitter -->
+                <!-- Microsoft to blame! -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Button x:Name="Button1" Grid.Row="0" HorizontalAlignment="Stretch"
+                                Content="Debug!" VerticalAlignment="Stretch" Margin="2" Click="Button1_Click" />
+                        <Button x:Name="Button2" Grid.Row="1" HorizontalAlignment="Stretch"
+                                Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
+                    </Grid>
+                    <TextBox Grid.Row="1" HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
+                             AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas" Text="{Binding Path=Summary,Mode=OneWay}" />
+                </Grid>
+
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
