@@ -39,8 +39,6 @@ namespace mediainfo_project_ng
                 _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
                 _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
             }
-
-            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 #if DEBUG
             Button1.IsEnabled = true;
 #else
@@ -64,7 +62,7 @@ namespace mediainfo_project_ng
 
             sw.Start();
             foreach (var path in fileList) {
-                Utils.LoadFile(path, ref _fileInfos);
+                Utils.LoadFile(path, _fileInfos);
             }
             sw.Stop();
 
@@ -90,9 +88,9 @@ namespace mediainfo_project_ng
             foreach (var path in paths)
             {
                 if (File.Exists(path))
-                    Utils.LoadFile(path, ref _fileInfos);
+                    Utils.LoadFile(path, _fileInfos);
                 else if (Directory.Exists(path))
-                    Utils.LoadDirectory(path, ref _fileInfos);
+                    Utils.LoadDirectory(path, _fileInfos);
             }
             sw.Stop();
             _mainWindowViewModel.StatusString += $"Total time cost: {sw.ElapsedMilliseconds}ms";
