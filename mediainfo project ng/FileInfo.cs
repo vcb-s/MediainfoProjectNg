@@ -120,27 +120,4 @@ namespace mediainfo_project_ng
             MI.Close();
         }
     }
-
-    public class FileInfos : ObservableCollection<FileInfo>
-    {
-        public FileInfos()
-        {
-        }
-
-        public FileInfos(IEnumerable<string> urls)
-        {
-            foreach (var url in urls)
-            {
-                this.Add(new FileInfo(url));
-            }
-        }
-
-        public void AddItems(IEnumerable<string> urls)
-        {
-            foreach (var url in urls)
-            {
-                this.Add(new FileInfo(url));
-            }
-        }
-    }
 }

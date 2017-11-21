@@ -19,25 +19,28 @@ namespace mediainfo_project_ng
     public partial class MainWindow : Window
     {
         private FileInfos _fileInfos;
-
-        // TODO: Proper data binding for statusString.
-        private string _statusString;
-
+        private static MainWindowViewModel _mainWindowViewModel;
         public MainWindow()
         {
             InitializeComponent();
             _fileInfos = (FileInfos) FindResource("FileInfos");
+            _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
+            DataContext = _mainWindowViewModel;
+            
             var MI = new MediaInfo();
-            var toDisplay = MI.Option("Info_Version");
-            if (toDisplay.Length == 0)
+            var version = MI.Option("Info_Version");
+            if (version == "Unable to load MediaInfo library")
             {
-                toDisplay = " [Mediainfo: Unavailable]";
+                _mainWindowViewModel.TitleString = "mediainfo project ng [Mediainfo: Unavailable]";
+                MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng",MessageBoxButton.OK,MessageBoxImage.Error);
             }
             else
             {
-                toDisplay = $" [Mediainfo: {toDisplay.Substring(15)}]";
+                _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
+                _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
             }
-            Window1.Title += toDisplay;
+
+            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 #if DEBUG
             Button1.IsEnabled = true;
 #else
@@ -49,7 +52,7 @@ namespace mediainfo_project_ng
         {
 #if DEBUG
             var sw = new Stopwatch();
-            _statusString = Empty;
+            _mainWindowViewModel.StatusString = Empty;
 
             // TODO: Make it in config file
             var fileList = new List<string>
@@ -65,20 +68,20 @@ namespace mediainfo_project_ng
             }
             sw.Stop();
 
-            _statusString += $"Elapsed {sw.ElapsedMilliseconds}ms ";
-            _statusString += $"Count: {_fileInfos.Count - before}";
+            _mainWindowViewModel.StatusString += $"Elapsed {sw.ElapsedMilliseconds}ms ";
+            _mainWindowViewModel.StatusString += $"Count: {_fileInfos.Count - before}";
 #endif
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             _fileInfos.Clear();
-            _statusString = "";
+            _mainWindowViewModel.StatusString = "";
         }
 
         private void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
-            _statusString = Empty;
+            _mainWindowViewModel.StatusString = Empty;
             var sw = new Stopwatch();
             var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (paths == null) return;
@@ -92,13 +95,11 @@ namespace mediainfo_project_ng
                     Utils.LoadDirectory(path, ref _fileInfos);
             }
             sw.Stop();
-            _statusString += $"Total time cost: {sw.ElapsedMilliseconds}ms";
+            _mainWindowViewModel.StatusString += $"Total time cost: {sw.ElapsedMilliseconds}ms";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
         {
-            // TODO: It doesn't work!!!! 
-            // Edited: May work, but no effect on the mouse cursor
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.All : DragDropEffects.None;
         }
 
@@ -106,7 +107,7 @@ namespace mediainfo_project_ng
         {
             if (e.OriginalSource is ScrollViewer)
             {
-                ((DataGrid) sender).UnselectAll();
+                DataGrid1.UnselectAll();
             }
         }
 

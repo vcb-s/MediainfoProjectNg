@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:mediainfo_project_ng"
         xmlns:converter="clr-namespace:mediainfo_project_ng.Converter"
         mc:Ignorable="d"
-        Title="mediainfo project ng" Height="400" Width="800" MinWidth="800" MinHeight="350"
-        ResizeMode="CanResizeWithGrip"
-        x:Name="Window1">
+        Title="{Binding Path=TitleString,Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
+        ResizeMode="CanResizeWithGrip">
     <Window.Resources>
         <local:FileInfos x:Key="FileInfos" />
+        <local:MainWindowViewModel x:Key="WindowViewModel" />
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
@@ -18,8 +18,11 @@
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem Width="600">
+                    <TextBlock Text="{Binding StatusString}" />
+                </StatusBarItem>
                 <StatusBarItem>
-                    <TextBlock DataContext="{StaticResource FileInfos}" Text="{Binding Count}" />
+                    <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
                 </StatusBarItem>
             </StatusBar>
             <Grid DataContext="{StaticResource FileInfos}">
