@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using MediaInfoLib;
 using static System.String;
@@ -18,7 +13,7 @@ namespace mediainfo_project_ng
     /// </summary>
     public partial class MainWindow : Window
     {
-        private FileInfos _fileInfos;
+        private readonly FileInfos _fileInfos;
         private static MainWindowViewModel _mainWindowViewModel;
         public MainWindow()
         {
@@ -26,18 +21,26 @@ namespace mediainfo_project_ng
             _fileInfos = (FileInfos) FindResource("FileInfos");
             _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
-            
-            var MI = new MediaInfo();
-            var version = MI.Option("Info_Version");
-            if (version == "Unable to load MediaInfo library")
+
+            MediaInfo MI = null;
+            try
             {
-                _mainWindowViewModel.TitleString = "mediainfo project ng [Mediainfo: Unavailable]";
-                MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng",MessageBoxButton.OK,MessageBoxImage.Error);
+                MI = new MediaInfo();
+                var version = MI.Option("Info_Version");
+                if (version == "Unable to load MediaInfo library")
+                {
+                    _mainWindowViewModel.TitleString = "mediainfo project ng [Mediainfo: Unavailable]";
+                    MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
+                    _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
+                }
             }
-            else
+            finally
             {
-                _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
-                _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
+                MI?.Close();
             }
 
             var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -48,10 +51,9 @@ namespace mediainfo_project_ng
 #endif
         }
 
-        private void Button1_Click(object sender, RoutedEventArgs e)
+        private async void Button1_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            var sw = new Stopwatch();
             _mainWindowViewModel.StatusString = Empty;
 
             // TODO: Make it in config file
@@ -62,13 +64,10 @@ namespace mediainfo_project_ng
             };
             var before = _fileInfos.Count;
 
-            sw.Start();
-            foreach (var path in fileList) {
-                Utils.LoadFile(path, ref _fileInfos);
-            }
-            sw.Stop();
+            var ret = await Utils.Load(fileList.ToArray());
+            _fileInfos.AddItems(ret.Item1);
 
-            _mainWindowViewModel.StatusString += $"Elapsed {sw.ElapsedMilliseconds}ms ";
+            _mainWindowViewModel.StatusString += $"Elapsed {ret.Item2}ms ";
             _mainWindowViewModel.StatusString += $"Count: {_fileInfos.Count - before}";
 #endif
         }
@@ -79,23 +78,13 @@ namespace mediainfo_project_ng
             _mainWindowViewModel.StatusString = "";
         }
 
-        private void DataGrid1_OnDrop(object sender, DragEventArgs e)
+        private async void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
             _mainWindowViewModel.StatusString = Empty;
-            var sw = new Stopwatch();
-            var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (paths == null) return;
-            sw.Start();
-            // TODO: Start a new thread to prevent UI freeze
-            foreach (var path in paths)
-            {
-                if (File.Exists(path))
-                    Utils.LoadFile(path, ref _fileInfos);
-                else if (Directory.Exists(path))
-                    Utils.LoadDirectory(path, ref _fileInfos);
-            }
-            sw.Stop();
-            _mainWindowViewModel.StatusString += $"Total time cost: {sw.ElapsedMilliseconds}ms";
+            if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
+            var ret = await Utils.Load(urls, url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
+            _fileInfos.AddItems(ret.Item1);
+            _mainWindowViewModel.StatusString = $"Total time cost: {ret.Item2}ms";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
