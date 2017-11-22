@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -81,7 +82,8 @@ namespace mediainfo_project_ng
         {
             _mainWindowViewModel.StatusString = Empty;
             if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
-            var ret = await Utils.Load(urls, url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
+            var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
+            var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
             _fileInfos.AddItems(ret.Item1);
             _mainWindowViewModel.StatusString = $"Total time cost: {ret.Item2}ms";
         }
