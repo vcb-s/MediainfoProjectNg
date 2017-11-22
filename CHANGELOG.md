@@ -2,4 +2,22 @@
 
 ## 0.0.1
 
-Basically functional.
+May  6, 2017
+
+* Basically functional.
+
+## 0.1.1
+
+Nov 21, 2017
+
+* Rewrite the back logic
+* Fix issue with sorting
+* Fix file reading problem
+
+## 0.1.2
+
+Nov 22, 2017
+
+* Rewrite the file reading part. Now it is asynced. (Very great thanks to TautCony)
+* Add detection for streams with hugely different duration. (Background color is PaleVioletRed)
+* Add detection for strange chapters. (Background color is Yellow)
