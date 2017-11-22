@@ -12,7 +12,7 @@ namespace mediainfo_project_ng
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private readonly FileInfos _fileInfos;
         private static MainWindowViewModel _mainWindowViewModel;
@@ -84,8 +84,8 @@ namespace mediainfo_project_ng
             if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
             var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
             var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
-            _fileInfos.AddItems(ret.Item1);
-            _mainWindowViewModel.StatusString = $"Total time cost: {ret.Item2}ms";
+            _fileInfos.AddItems(ret.info);
+            _mainWindowViewModel.StatusString = $"Total time cost: {ret.duration}ms";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)

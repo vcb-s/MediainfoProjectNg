@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -42,7 +41,7 @@ namespace mediainfo_project_ng
             }
         }
 
-        public static async Task<(IEnumerable<FileInfo>,long)> Load(string[] urls, Func<string, bool> filter = null, Action<string> progressCallback = null)
+        public static async Task<(IEnumerable<FileInfo> info, long duration)> Load(string[] urls, Func<string, bool> filter = null, Action<string> progressCallback = null)
         {
             var fileInfos = new List<FileInfo>();
             var sw = new Stopwatch();
