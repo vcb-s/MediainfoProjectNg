@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MediaInfoLib;
 
 namespace mediainfo_project_ng
 {
     static class Utils
     {
-		// TODO: Determine what should be excluded
+        // TODO: Determine what should be excluded
         private static readonly List<string> ExcludeDirs = new List<string>
         {
             "CDs",
@@ -24,34 +22,73 @@ namespace mediainfo_project_ng
             ".torrent"
         };
 
-        public static string LoadDirectory(string dir, ref FileInfos fileInfos)
+        public static IEnumerable<string> EnumerateFolder(string folderPath)
         {
-            var str = string.Empty;
-            foreach (var path in Directory.GetFiles(dir))
+            foreach (var file in Directory.GetFiles(folderPath))
             {
-                str += LoadFile(path, ref fileInfos);
+                yield return file;
             }
-            foreach (var path in Directory.GetDirectories(dir))
+            var folderQueue = new Queue<string>();
+            folderQueue.EnqueueRange(Directory.GetDirectories(folderPath));
+            while (folderQueue.Count > 0)
             {
-                if (ExcludeDirs.Contains(Path.GetFileName(path)))
-                    continue;
-                str += LoadDirectory(path, ref fileInfos);
+                var currentFolder = folderQueue.Dequeue();
+                foreach (var file in Directory.GetFiles(currentFolder))
+                {
+                    yield return file;
+                }
+                folderQueue.EnqueueRange(Directory.GetDirectories(currentFolder));
             }
-            return str;
         }
 
-        public static string LoadFile(string path, ref FileInfos fileInfos)
+        public static async Task<(IEnumerable<FileInfo>,long)> Load(string[] urls, Action<string> progressCallback = null)
         {
-            if (!File.Exists(path)) return "";
-            if (ExcludeExts.Contains(Path.GetExtension(path))) return "";
+            var fileInfos = new List<FileInfo>();
             var sw = new Stopwatch();
-            var length = new System.IO.FileInfo(path).Length;
             sw.Start();
-            fileInfos.AddItems(new List<string> {path});
+            foreach (var file in urls.Where(File.Exists))
+            {
+                progressCallback?.Invoke(file);
+                var info = await LoadFile(file);
+                fileInfos.Add(info);
+            }
+            foreach (var dir in urls.Where(Directory.Exists))
+            {
+                if (ExcludeDirs.Contains(Path.GetFileName(dir))) continue;
+                foreach (var file in EnumerateFolder(dir))
+                {
+                    progressCallback?.Invoke(file);
+                    var info = await LoadFile(file);
+                    fileInfos.Add(info);
+                }
+            }
             sw.Stop();
-            return "Loading: " + path + "\r\nCost " + sw.ElapsedMilliseconds + "ms! Length: " +
-                   length +
-                   "bytes \r\n";
+            return (fileInfos.Where(item=>item!=null), sw.ElapsedMilliseconds);
+        }
+
+        public static async Task<FileInfo> LoadFile(string path)
+        {
+            if (!File.Exists(path)) return null;
+            if (ExcludeExts.Contains(Path.GetExtension(path))) return null;
+            return await Task.Run(() => new FileInfo(path));
+        }
+
+        public static int TryParseAsInt(this string s)
+        {
+            return int.TryParse(s, out var i) ? i : 0;
+        }
+
+        public static int TryParseAsMillisecond(this string s)
+        {
+            return TimeSpan.TryParse(s, out var ts) ? (int) ts.TotalMilliseconds : 0;
+        }
+
+        private static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> source)
+        {
+            foreach (var item in source)
+            {
+                queue.Enqueue(item);
+            }
         }
     }
 }

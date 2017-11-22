@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using static System.String;
 
 namespace mediainfo_project_ng
@@ -14,10 +10,7 @@ namespace mediainfo_project_ng
         public event PropertyChangedEventHandler PropertyChanged;
         protected void Notify(string propName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
     }
 
@@ -60,11 +53,29 @@ namespace mediainfo_project_ng
             }
         }
 
+        public void AddItem(string url)
+        {
+            Add(new FileInfo(url));
+        }
+
+        public void AddItem(FileInfo info)
+        {
+            Add(info);
+        }
+
         public void AddItems(IEnumerable<string> urls)
         {
             foreach (var url in urls)
             {
                 Add(new FileInfo(url));
+            }
+        }
+
+        public void AddItems(IEnumerable<FileInfo> infos)
+        {
+            foreach (var info in infos)
+            {
+                Add(info);
             }
         }
     }
