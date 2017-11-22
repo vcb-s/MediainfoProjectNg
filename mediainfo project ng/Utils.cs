@@ -78,6 +78,11 @@ namespace mediainfo_project_ng
             return int.TryParse(s, out var i) ? i : 0;
         }
 
+        public static int TryParseAsMillisecond(this string s)
+        {
+            return TimeSpan.TryParse(s, out var ts) ? (int) ts.TotalMilliseconds : 0;
+        }
+
         private static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> source)
         {
             foreach (var item in source)
