@@ -33,6 +33,7 @@ namespace mediainfo_project_ng
             while (folderQueue.Count > 0)
             {
                 var currentFolder = folderQueue.Dequeue();
+                if (ExcludeDirs.Contains(Path.GetFileName(currentFolder))) continue;
                 foreach (var file in Directory.GetFiles(currentFolder))
                 {
                     yield return file;
