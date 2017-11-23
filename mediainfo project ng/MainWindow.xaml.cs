@@ -27,16 +27,17 @@ namespace mediainfo_project_ng
             try
             {
                 MI = new MediaInfo();
+                var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
                 var version = MI.Option("Info_Version");
                 if (version == "Unable to load MediaInfo library")
                 {
-                    _mainWindowViewModel.TitleString = "mediainfo project ng [Mediainfo: Unavailable]";
+                    _mainWindowViewModel.TitleString += " [Mediainfo: Unavailable]";
                     MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                    _mainWindowViewModel.TitleString = $"mediainfo project ng {v} [Mediainfo: {version.Substring(15)}]";
+                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version.Substring(15)}]";
                     _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
                 }
             }
