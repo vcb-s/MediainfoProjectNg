@@ -33,6 +33,7 @@ namespace mediainfo_project_ng
             while (folderQueue.Count > 0)
             {
                 var currentFolder = folderQueue.Dequeue();
+                if (ExcludeDirs.Contains(Path.GetFileName(currentFolder))) continue;
                 foreach (var file in Directory.GetFiles(currentFolder))
                 {
                     yield return file;
@@ -75,7 +76,12 @@ namespace mediainfo_project_ng
 
         public static int TryParseAsInt(this string s)
         {
-            return int.TryParse(s, out var i) ? i : 0;
+            return decimal.TryParse(s, out var i) ? (int) i : 0;
+        }
+
+        public static int TryParseAsMillisecond(this string s)
+        {
+            return TimeSpan.TryParse(s, out var ts) ? (int) ts.TotalMilliseconds : 0;
         }
 
         private static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> source)

@@ -24,6 +24,25 @@ namespace mediainfo_project_ng.Converter
             {
                 return Brushes.DarkRed;
             }
+
+            var duration = new List<int>();
+            duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration).ToList());
+            duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));
+            if (duration.Count > 0)
+            {
+                if (duration.Max() - duration.Min() > 600)
+                {
+                    return Brushes.PaleVioletRed;
+                }
+
+                if (info.GeneralInfo.ChapterCount != 0 &&
+                    (info.GeneralInfo.ChapterCount == 1 || info.GeneralInfo.ChapterCount == -1 ||
+                     info.ChapterInfos.Last().Timespan > duration.Max() - 1100))
+                {
+                    return Brushes.Yellow;
+                }
+            }
+
             if (info.AudioInfos.Count > 2)
             {
                 return Brushes.DarkGreen;

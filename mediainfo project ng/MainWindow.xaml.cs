@@ -62,13 +62,12 @@ namespace mediainfo_project_ng
                 @"C:\Users\Mark\Desktop\doc_2017-11-21_12-42-55.mp4",
                 @"C:\Users\Mark\Desktop\K-ON!_06mp4.mp4"
             };
-            var before = _fileInfos.Count;
 
             var ret = await Utils.Load(fileList.ToArray());
             _fileInfos.AddItems(ret.Item1);
 
             _mainWindowViewModel.StatusString += $"Elapsed {ret.Item2}ms ";
-            _mainWindowViewModel.StatusString += $"Count: {_fileInfos.Count - before}";
+            _mainWindowViewModel.StatusString += $"Count: {fileList.Count}";
 #endif
         }
 

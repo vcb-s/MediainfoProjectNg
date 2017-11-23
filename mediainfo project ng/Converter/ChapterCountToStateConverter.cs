@@ -11,7 +11,7 @@ namespace mediainfo_project_ng.Converter
         {
             if (targetType != typeof(string)) return null;
             var chapter = int.Parse(value?.ToString() ?? "0");
-            return chapter > 0 ? "有" : "";
+            return chapter != 0 ? "有" : "";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
