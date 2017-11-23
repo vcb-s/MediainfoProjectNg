@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,7 +12,7 @@ namespace mediainfo_project_ng
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private readonly FileInfos _fileInfos;
         private static MainWindowViewModel _mainWindowViewModel;
@@ -26,15 +27,17 @@ namespace mediainfo_project_ng
             try
             {
                 MI = new MediaInfo();
+                var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
                 var version = MI.Option("Info_Version");
                 if (version == "Unable to load MediaInfo library")
                 {
-                    _mainWindowViewModel.TitleString = "mediainfo project ng [Mediainfo: Unavailable]";
+                    _mainWindowViewModel.TitleString += " [Mediainfo: Unavailable]";
                     MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    _mainWindowViewModel.TitleString = $"mediainfo project ng [Mediainfo: {version.Substring(15)}]";
+                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version.Substring(15)}]";
                     _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
                 }
             }
@@ -79,9 +82,10 @@ namespace mediainfo_project_ng
         {
             _mainWindowViewModel.StatusString = Empty;
             if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
-            var ret = await Utils.Load(urls, url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
-            _fileInfos.AddItems(ret.Item1);
-            _mainWindowViewModel.StatusString = $"Total time cost: {ret.Item2}ms";
+            var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
+            var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
+            _fileInfos.AddItems(ret.info);
+            _mainWindowViewModel.StatusString = $"Total time cost: {ret.duration}ms";
         }
 
         private void DataGrid1_OnDragEnter(object sender, DragEventArgs e)
