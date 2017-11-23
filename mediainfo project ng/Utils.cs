@@ -42,15 +42,14 @@ namespace mediainfo_project_ng
             }
         }
 
-        public static async Task<(IEnumerable<FileInfo>,long)> Load(string[] urls, Action<string> progressCallback = null)
+        public static async Task<(IEnumerable<FileInfo> info, long duration)> Load(string[] urls, Func<string, bool> filter = null, Action<string> progressCallback = null)
         {
             var fileInfos = new List<FileInfo>();
             var sw = new Stopwatch();
             sw.Start();
             foreach (var file in urls.Where(File.Exists))
             {
-                progressCallback?.Invoke(file);
-                var info = await LoadFile(file);
+                var info = await LoadFile(file, filter, progressCallback);
                 fileInfos.Add(info);
             }
             foreach (var dir in urls.Where(Directory.Exists))
@@ -58,8 +57,7 @@ namespace mediainfo_project_ng
                 if (ExcludeDirs.Contains(Path.GetFileName(dir))) continue;
                 foreach (var file in EnumerateFolder(dir))
                 {
-                    progressCallback?.Invoke(file);
-                    var info = await LoadFile(file);
+                    var info = await LoadFile(file, filter, progressCallback);
                     fileInfos.Add(info);
                 }
             }
@@ -67,10 +65,12 @@ namespace mediainfo_project_ng
             return (fileInfos.Where(item=>item!=null), sw.ElapsedMilliseconds);
         }
 
-        public static async Task<FileInfo> LoadFile(string path)
+        public static async Task<FileInfo> LoadFile(string path, Func<string, bool> filter = null, Action<string> progressCallback = null)
         {
             if (!File.Exists(path)) return null;
             if (ExcludeExts.Contains(Path.GetExtension(path))) return null;
+            if (filter?.Invoke(path) ?? false) return null;
+            progressCallback?.Invoke(path);
             return await Task.Run(() => new FileInfo(path));
         }
 
