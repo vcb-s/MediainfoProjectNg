@@ -75,7 +75,7 @@ namespace mediainfo_project_ng
 
         public static int TryParseAsInt(this string s)
         {
-            return int.TryParse(s, out var i) ? i : 0;
+            return decimal.TryParse(s, out var i) ? (int) i : 0;
         }
 
         public static int TryParseAsMillisecond(this string s)
