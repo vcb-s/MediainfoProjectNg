@@ -23,7 +23,7 @@ namespace mediainfo_project_ng.Converter
             if (info.GeneralInfo.Format == "Matroska" && !Matroska.Contains(extension)
                 || info.GeneralInfo.Format == "MPEG-4" && !MPEG_4.Contains(extension))
             {
-                return Brushes.DarkRed;
+                return Brushes.Red;
             }
 
             var duration = new List<int>();
@@ -46,7 +46,7 @@ namespace mediainfo_project_ng.Converter
 
             if (info.AudioInfos.Count > 2)
             {
-                return Brushes.DarkGreen;
+                return Brushes.GreenYellow;
             }
 
             return Brushes.White;

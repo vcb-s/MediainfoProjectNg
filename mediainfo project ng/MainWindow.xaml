@@ -12,7 +12,6 @@
         <local:FileInfos x:Key="FileInfos" />
         <local:MainWindowViewModel x:Key="WindowViewModel" />
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
-        <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
     </Window.Resources>
     <Grid>
@@ -70,7 +69,6 @@
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
                             <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
                         </Style>
                     </DataGrid.RowStyle>
