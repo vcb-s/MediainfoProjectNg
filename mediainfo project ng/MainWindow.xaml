@@ -41,7 +41,7 @@
                           Drop="DataGrid1_OnDrop"
                           DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
                           PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
-                          SelectionMode="Single" ItemsSource="{Binding}"
+                          SelectionMode="Extended" ItemsSource="{Binding}"
                           IsSynchronizedWithCurrentItem="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="文件名" Binding="{Binding Path=GeneralInfo.Filename}" />

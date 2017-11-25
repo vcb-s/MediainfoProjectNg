@@ -103,9 +103,13 @@ namespace mediainfo_project_ng
 
         private void DataGrid1_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // TODO: Find a refined way (About synchronize)
+            // TODO: Find a refined way
             if (e.Key != Key.Delete) return;
-            _fileInfos.Remove((FileInfo) DataGrid1.SelectedItem);
+            var selectedItems = DataGrid1.SelectedItems.Cast<FileInfo>().ToList();
+            foreach (var item in selectedItems)
+            {
+                _fileInfos.Remove(item);
+            }
         }
     }
 }
