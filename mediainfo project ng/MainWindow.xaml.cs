@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MediaInfoLib;
-using static System.String;
 
 namespace mediainfo_project_ng
 {
@@ -56,14 +56,17 @@ namespace mediainfo_project_ng
         private async void Button1_Click(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            _mainWindowViewModel.StatusString = Empty;
-
-            // TODO: Make it in config file
-            var fileList = new List<string>
+            var fileList = new List<string>();
+            // Please use UTF8 encoding for the file
+            using (var sr = new StreamReader("Filelist.txt"))
             {
-                @"C:\Users\Mark\Desktop\doc_2017-11-21_12-42-55.mp4",
-                @"C:\Users\Mark\Desktop\K-ON!_06mp4.mp4"
-            };
+                while (!sr.EndOfStream)
+                {
+                    fileList.Add(await sr.ReadLineAsync());
+                }
+            }
+            
+            _mainWindowViewModel.StatusString = string.Empty;
 
             var ret = await Utils.Load(fileList.ToArray());
             _fileInfos.AddItems(ret.Item1);
@@ -81,7 +84,7 @@ namespace mediainfo_project_ng
 
         private async void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
-            _mainWindowViewModel.StatusString = Empty;
+            _mainWindowViewModel.StatusString = string.Empty;
             if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
             var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
             var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
