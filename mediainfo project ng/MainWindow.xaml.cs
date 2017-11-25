@@ -23,12 +23,13 @@ namespace mediainfo_project_ng
             _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
 
+            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
+
             MediaInfo MI = null;
             try
             {
                 MI = new MediaInfo();
-                var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
                 var version = MI.Option("Info_Version");
                 if (version == "Unable to load MediaInfo library")
                 {
