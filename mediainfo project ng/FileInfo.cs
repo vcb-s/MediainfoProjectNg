@@ -126,7 +126,7 @@ namespace mediainfo_project_ng
                         i < MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsInt();
                         i++)
                     {
-                        var a = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text).Split(new []{':'}, 2);
+                        var a = GeneralInfo.Format == "Matroska" ? MI.Get(StreamKind.Menu, 0, i, InfoKind.Text).Split(new[] {':'}, 2) : new[] {"", MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)};
                         ChapterInfos.Add(new ChapterInfo
                         {
                             Timespan = MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
