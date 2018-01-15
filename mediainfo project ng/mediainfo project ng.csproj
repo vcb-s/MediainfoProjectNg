@@ -27,9 +27,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -61,6 +62,7 @@
     </ApplicationDefinition>
     <Compile Include="Converter\ChapterCountToStateConverter.cs" />
     <Compile Include="Converter\InfoToBackgroundConverter.cs" />
+    <Compile Include="Converter\InfoToForegroundConverter.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ViewModels.cs" />
     <Page Include="MainWindow.xaml">

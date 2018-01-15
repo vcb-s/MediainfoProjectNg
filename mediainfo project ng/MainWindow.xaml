@@ -7,11 +7,13 @@
         xmlns:converter="clr-namespace:mediainfo_project_ng.Converter"
         mc:Ignorable="d"
         Title="{Binding Path=TitleString,Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="CanResizeWithGrip"
+        xml:lang="zh-CN">
     <Window.Resources>
         <local:FileInfos x:Key="FileInfos" />
         <local:MainWindowViewModel x:Key="WindowViewModel" />
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
+        <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
     </Window.Resources>
     <Grid>
@@ -70,6 +72,7 @@
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
+                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
                         </Style>
                     </DataGrid.RowStyle>
                 </DataGrid>

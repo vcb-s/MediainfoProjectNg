@@ -27,7 +27,7 @@ namespace mediainfo_project_ng.Converter
             }
 
             var duration = new List<int>();
-            duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration).ToList());
+            duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration));
             duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));
             if (duration.Count > 0)
             {
