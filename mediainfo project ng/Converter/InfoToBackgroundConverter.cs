@@ -23,11 +23,11 @@ namespace mediainfo_project_ng.Converter
             if (info.GeneralInfo.Format == "Matroska" && !Matroska.Contains(extension)
                 || info.GeneralInfo.Format == "MPEG-4" && !MPEG_4.Contains(extension))
             {
-                return Brushes.DarkRed;
+                return Brushes.Red;
             }
 
             var duration = new List<int>();
-            duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration).ToList());
+            duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration));
             duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));
             if (duration.Count > 0)
             {
@@ -38,7 +38,7 @@ namespace mediainfo_project_ng.Converter
 
                 if (info.GeneralInfo.ChapterCount != 0 &&
                     (info.GeneralInfo.ChapterCount == 1 || info.GeneralInfo.ChapterCount == -1 ||
-                     info.ChapterInfos.Last().Timespan > duration.Max() - 1100))
+                     info.ChapterInfos.Last().Timespan > duration.Max() - 1100 || info.ChapterInfos.First().Timespan != 0))
                 {
                     return Brushes.Yellow;
                 }
@@ -46,7 +46,7 @@ namespace mediainfo_project_ng.Converter
 
             if (info.AudioInfos.Count > 2)
             {
-                return Brushes.DarkGreen;
+                return Brushes.GreenYellow;
             }
 
             return Brushes.White;

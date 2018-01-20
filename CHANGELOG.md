@@ -29,3 +29,12 @@ Nov 23, 2017
 * Can bypass files that have already been loaded. (Great thanks to TautCony)
 * Fix issue with duration detect.
 * Auto generated version number.
+
+## 0.1.4
+
+Jan 20, 2018
+
+* Now multiple selection is enabled.
+* Add first-chapter-not-start-at-0 detection.
+* Resovle an issue that causes program crash when loading non-Matroska file.
+

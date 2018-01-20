@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:mediainfo_project_ng"
         xmlns:converter="clr-namespace:mediainfo_project_ng.Converter"
         mc:Ignorable="d"
-        Title="{Binding Path=TitleString,Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
-        ResizeMode="CanResizeWithGrip">
+        Title="{Binding Path=TitleString, Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
+        ResizeMode="CanResizeWithGrip"
+        xml:lang="zh-CN">
     <Window.Resources>
         <local:FileInfos x:Key="FileInfos" />
         <local:MainWindowViewModel x:Key="WindowViewModel" />
@@ -41,7 +42,7 @@
                           Drop="DataGrid1_OnDrop"
                           DragEnter="DataGrid1_OnDragEnter" MouseDown="DataGrid1_OnMouseDown"
                           PreviewKeyDown="DataGrid1_OnPreviewKeyDown"
-                          SelectionMode="Single" ItemsSource="{Binding}"
+                          SelectionMode="Extended" ItemsSource="{Binding}"
                           IsSynchronizedWithCurrentItem="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="文件名" Binding="{Binding Path=GeneralInfo.Filename}" />
@@ -70,10 +71,16 @@
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
-                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
                             <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
+                            <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
                         </Style>
                     </DataGrid.RowStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                        </Style>
+                    </DataGrid.CellStyle>
                 </DataGrid>
 
                 <!-- TODO: Fix the overflow problem when dragging the splitter -->

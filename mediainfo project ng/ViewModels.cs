@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using static System.String;
 
 namespace mediainfo_project_ng
 {
@@ -16,7 +15,7 @@ namespace mediainfo_project_ng
 
     class MainWindowViewModel : BaseViewModel
     {
-        private string _statusString = Empty;
+        private string _statusString = string.Empty;
         public string StatusString
         {
             get => _statusString;
@@ -27,7 +26,7 @@ namespace mediainfo_project_ng
             }
         }
 
-        private string _titleString = Empty;
+        private string _titleString = string.Empty;
         public string TitleString
         {
             get => _titleString;
