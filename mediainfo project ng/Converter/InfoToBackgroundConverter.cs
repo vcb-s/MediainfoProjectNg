@@ -38,7 +38,7 @@ namespace mediainfo_project_ng.Converter
 
                 if (info.GeneralInfo.ChapterCount != 0 &&
                     (info.GeneralInfo.ChapterCount == 1 || info.GeneralInfo.ChapterCount == -1 ||
-                     info.ChapterInfos.Last().Timespan > duration.Max() - 1100))
+                     info.ChapterInfos.Last().Timespan > duration.Max() - 1100 || info.ChapterInfos.First().Timespan != 0))
                 {
                     return Brushes.Yellow;
                 }
