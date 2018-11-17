@@ -26,6 +26,11 @@ namespace mediainfo_project_ng.Converter
                 return Brushes.Red;
             }
 
+            if (info.VideoInfos.Any(o => o.Delay !=0) || info.AudioInfos.Any(o => o.Delay != 0))
+            {
+                return new SolidColorBrush(Color.FromRgb(0, 164, 172));
+            }
+
             var duration = new List<int>();
             duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration));
             duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));

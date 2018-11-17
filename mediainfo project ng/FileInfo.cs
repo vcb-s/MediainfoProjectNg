@@ -30,6 +30,7 @@ namespace mediainfo_project_ng
         public int Height { get; set; }
         public int Width { get; set; }
         public string Language { get; set; }
+        public int Delay { get; set; }
     }
 
     public class AudioInfo
@@ -39,6 +40,7 @@ namespace mediainfo_project_ng
         public int Bitrate { get; set; }
         public int Duration { get; set; }
         public string Language { get; set; }
+        public int Delay { get; set; }
     }
 
     public class ChapterInfo
@@ -104,8 +106,18 @@ namespace mediainfo_project_ng
                         Duration      = MI.Get(StreamKind.Video, i, "Duration").TryParseAsInt(),
                         Height        = MI.Get(StreamKind.Video, i, "Height").TryParseAsInt(),
                         Width         = MI.Get(StreamKind.Video, i, "Width").TryParseAsInt(),
-                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper()
+                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
+                        Delay         = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt()
                     });
+#if DEBUG
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Height"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Sampled_Width"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Sampled_Height"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio/String"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio_Original"));
+#endif
                 }
 
                 for (var i = 0; i < GeneralInfo.AudioCount; i++)
@@ -116,7 +128,8 @@ namespace mediainfo_project_ng
                         BitDepth = MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsInt(),
                         Bitrate  = MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsInt() / 1000,
                         Duration = MI.Get(StreamKind.Audio, i, "Duration").TryParseAsInt(),
-                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper()
+                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
+                        Delay    = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt()
                     });
                 }
 
