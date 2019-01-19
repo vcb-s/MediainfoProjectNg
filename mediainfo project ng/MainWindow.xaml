@@ -15,6 +15,7 @@
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+        <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
     </Window.Resources>
     <Grid>
         <DockPanel>
@@ -57,7 +58,7 @@
                             </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
-                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0].Fps}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0] ,Converter={StaticResource FpsModeToTextConverter}}" />
                         <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />

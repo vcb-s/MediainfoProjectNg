@@ -37,6 +37,7 @@ namespace mediainfo_project_ng
     {
         public string Format { get; set; }
         public string FormatProfile { get; set; }
+        public string FpsMode { get; set; }
         public string Fps { get; set; }
         public int Bitrate { get; set; }
         public int BitDepth { get; set; }
@@ -115,6 +116,7 @@ namespace mediainfo_project_ng
                     {
                         Format        = MI.Get(StreamKind.Video, i, "Format"),
                         FormatProfile = MI.Get(StreamKind.Video, i, "Format_Profile"),
+                        FpsMode       = MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
                         Fps           = MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
                         Bitrate       = MI.Get(StreamKind.Video, i, "BitRate").TryParseAsInt() / 1000,
                         BitDepth      = MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsInt(),
