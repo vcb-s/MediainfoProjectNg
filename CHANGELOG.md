@@ -38,3 +38,12 @@ Jan 20, 2018
 * Add first-chapter-not-start-at-0 detection.
 * Resovle an issue that causes program crash when loading non-Matroska file.
 
+## 0.1.5
+
+Jan 19, 2019
+
+* New technical information window for pros.
+* Add delay detection.
+* Add filename-content mismatch detection (super lazy, use with caution).
+* Show VFR video as VFR rather than average framerate.
+
