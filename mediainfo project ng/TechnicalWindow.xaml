@@ -1,0 +1,36 @@
+﻿<Window x:Class="mediainfo_project_ng.TechnicalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mediainfo_project_ng"
+        mc:Ignorable="d"
+        Title="{Binding Detail.Key}" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <TreeView Grid.Row="1">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:KeyChildren}"
+                                          ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Key}" />
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type local:KeyValue}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock MinWidth="100" Text="{Binding Key}" />
+                        <TextBlock Text="{Binding Value}" TextWrapping="WrapWithOverflow" />
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="复制值" Click="MenuItemCopy_OnClick" />
+                                <MenuItem Header="复制键值对" Click="MenuItemKeyValuePairCopy_OnClick" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+            <TreeViewItem ItemsSource="{Binding Detail.Children}" Header="{Binding Detail.Key}" IsExpanded="True" />
+        </TreeView>
+    </Grid>
+</Window>
