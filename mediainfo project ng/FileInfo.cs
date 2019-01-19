@@ -6,6 +6,20 @@ using MediaInfoLib;
 
 namespace mediainfo_project_ng
 {
+    public class ProfileInfo
+    {
+        public string Profile { get; }
+        public string Level { get; }
+        public ProfileInfo(string profileString)
+        {
+            var strs = profileString.Split('@');
+            if (strs.Length > 0)
+                Profile = strs[0];
+            if (strs.Length > 1)
+                Level = strs[1];
+        }
+    }
+
     public class GeneralInfo
     {
         public string Filename { get; set; }
@@ -31,6 +45,7 @@ namespace mediainfo_project_ng
         public int Width { get; set; }
         public string Language { get; set; }
         public int Delay { get; set; }
+        public ProfileInfo Profile { get; set; }
     }
 
     public class AudioInfo
@@ -107,7 +122,8 @@ namespace mediainfo_project_ng
                         Height        = MI.Get(StreamKind.Video, i, "Height").TryParseAsInt(),
                         Width         = MI.Get(StreamKind.Video, i, "Width").TryParseAsInt(),
                         Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
-                        Delay         = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt()
+                        Delay         = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt(),
+                        Profile       = new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
                     });
 #if DEBUG
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
@@ -117,6 +133,11 @@ namespace mediainfo_project_ng
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio"));
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio/String"));
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio_Original"));
+                    Debug.WriteLine("ScanType:" + MI.Get(StreamKind.Video, i, "ScanType"));
+                    Debug.WriteLine("ScanType/String:" + MI.Get(StreamKind.Video, i, "ScanType/String"));
+                    Debug.WriteLine("FormatProfile:" + MI.Get(StreamKind.Video, i, "Format_Profile"));
+                    Debug.WriteLine("FormatLevel:" + MI.Get(StreamKind.Video, i, "Format_Level"));
+                    Debug.WriteLine("FormatTier:" + MI.Get(StreamKind.Video, i, "Format_Tier"));
 #endif
                 }
 

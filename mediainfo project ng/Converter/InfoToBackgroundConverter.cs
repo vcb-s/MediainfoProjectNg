@@ -19,7 +19,7 @@ namespace mediainfo_project_ng.Converter
             if (targetType != typeof(Brush)) return null;
             if (!(value is FileInfo info)) return null;
             var extension = Path.GetExtension(info.GeneralInfo.FullPath);
-
+            
             if (info.GeneralInfo.Format == "Matroska" && !Matroska.Contains(extension)
                 || info.GeneralInfo.Format == "MPEG-4" && !MPEG_4.Contains(extension))
             {
@@ -47,6 +47,11 @@ namespace mediainfo_project_ng.Converter
                 {
                     return Brushes.Yellow;
                 }
+            }
+
+            if (!Utils.FileNameContentMatched(info))
+            {
+                return Brushes.Violet;
             }
 
             if (info.AudioInfos.Count > 2)

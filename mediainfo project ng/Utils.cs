@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace mediainfo_project_ng
@@ -79,6 +80,21 @@ namespace mediainfo_project_ng
             return decimal.TryParse(s, out var i) ? (int) i : 0;
         }
 
+        public static bool FileNameContentMatched(FileInfo info)
+        {
+            var filenameReg = new Regex(@"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)+)\]\.mkv$");
+            var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath));
+            if (!match.Success) return true;
+            var profile = GenerateProfileString(info.VideoInfos[0].Profile);
+            if (profile == "") return true;
+            var vencoder = GenerateVencoderString(info.VideoInfos[0]);
+            if (vencoder == "") return true;
+            if (match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
+                && match.Groups["aencoders"].Value == GenerateAencodersString(info.AudioInfos))
+                return true;
+            return false;
+        }
+
         public static int TryParseAsMillisecond(this string s)
         {
             return TimeSpan.TryParse(s, out var ts) ? (int) ts.TotalMilliseconds : 0;
@@ -90,6 +106,65 @@ namespace mediainfo_project_ng
             {
                 queue.Enqueue(item);
             }
+        }
+
+        private static string GenerateProfileString(ProfileInfo info)
+        {
+            switch (info.Profile)
+            {
+                case "Main 10":
+                    return "Ma10p";
+                case "High 10":
+                    return "Hi10p";
+                case "High 4:4:4 Predictive":
+                    return "Hi444pp";
+                default:
+                    return "";
+            }
+        }
+
+        // TODO: Proper resolution calculation
+        private static string GenerateResolutionString(int width, int height)
+        {
+            if (width == 1920 || height == 1080)
+                return "1080p";
+            else if (height == 480)
+                return "480p";
+            else
+                return "";
+        }
+
+        private static string GenerateVencoderString(VideoInfo info)
+        {
+            if (info.Format == "HEVC")
+                return "x265";
+            else if (info.Format == "AVC")
+                return "x264";
+            else
+                return "";
+        }
+
+        private static string GenerateAencodersString(List<AudioInfo> infos)
+        {
+            var audios = new Dictionary<string, int>();
+            var ret = "";
+            foreach (var info in infos)
+            {
+                if (!audios.ContainsKey(info.Format))
+                {
+                    audios.Add(info.Format, 1);
+                } else
+                {
+                    audios[info.Format]++;
+                }
+            }
+            
+            foreach (var key in audios.Keys)
+            {
+                ret += $"_{(audios[key] > 1 ? audios[key].ToString() : string.Empty)}{Regex.Replace(key, "[^a-zA-Z0-9]+", "", RegexOptions.Compiled).ToLower()}";
+            }
+            
+            return ret;
         }
     }
 }
