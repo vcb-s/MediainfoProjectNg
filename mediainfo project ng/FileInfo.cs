@@ -2,10 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Media;
 using MediaInfoLib;
 
 namespace mediainfo_project_ng
 {
+    public enum ErrorLevel
+    {
+        info,
+        warning,
+        error
+    }
+
     public class ProfileInfo
     {
         public string Profile { get; }
@@ -66,12 +74,20 @@ namespace mediainfo_project_ng
         public string Language { get; set; }
     }
 
+    public class ErrorInfo
+    {
+        public ErrorLevel Level { get; set; }
+        public string Description { get; set; }
+        public Brush Brush { get; set; }
+    }
+
     public class FileInfo
     {
         public GeneralInfo GeneralInfo { get; } = new GeneralInfo();
         public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
         public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
+//        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
 
         public FileInfo(string url)

@@ -11,7 +11,37 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
-        <TreeView Grid.Row="1">
+        <DataGrid Grid.Row="0"
+                  HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
+                  VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
+                  IsReadOnly="True" Margin="2" HeadersVisibility="Column" CanUserAddRows="False"
+                  AutoGenerateColumns="False" SelectionUnit="FullRow"
+                  SelectionMode="Extended" ItemsSource="{Binding ErrorInfos}"
+                  IsSynchronizedWithCurrentItem="True">
+            <DataGrid.Resources>
+                <DataTemplate x:Key="DateTemplate" DataType="{x:Type local:ErrorInfo}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Path=Level}" />
+                    </StackPanel>
+                </DataTemplate>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn CellTemplate="{StaticResource DateTemplate}" />
+                <DataGridTextColumn Header="信息" Binding="{Binding Path=Description}" />
+            </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="{Binding Path=Brush}" />
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                </Style>
+            </DataGrid.CellStyle>
+        </DataGrid>
+        <TreeView Grid.Row="1" Margin="2">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:KeyChildren}"
                                           ItemsSource="{Binding Children}">

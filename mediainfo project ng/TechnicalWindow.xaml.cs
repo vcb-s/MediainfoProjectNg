@@ -38,8 +38,11 @@ namespace mediainfo_project_ng
         {
             InitializeComponent();
             var detail = GetTreeStructure(info.GeneralInfo.Filename, info);
-            this.DataContext = new
+            // TODO: Unify two checks
+            var errorInfos = Utils.CheckFile(info);
+            DataContext = new
             {
+                ErrorInfos = errorInfos,
                 Detail = detail
             };
         }
@@ -50,33 +53,33 @@ namespace mediainfo_project_ng
             var d = new KeyChildren(name);
             foreach (var prop in props)
             {
-                var v = prop.GetValue(o);
+                var value = prop.GetValue(o);
 
-                switch (v)
+                switch (value)
                 {
                     case GeneralInfo _:
                     case FileInfo _:
                     case AudioInfo _:
                     case ChapterInfo _:
                     case ProfileInfo _:
-                        d.Children.Add(GetTreeStructure(prop.Name, v));
+                        d.Children.Add(GetTreeStructure(prop.Name, value));
                         break;
                     case IList list:
-                        var dd = new KeyChildren(prop.Name);
+                        var keyChildren = new KeyChildren(prop.Name);
                         for (var i = 0; i < list.Count; i++)
                         {
                             var item = list[i];
-                            dd.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
+                            keyChildren.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
                         }
 
-                        d.Children.Add(dd);
+                        d.Children.Add(keyChildren);
                         break;
                     default:
-                        if (prop.Name == "Summary" && v is string)
+                        if (prop.Name == "Summary" && value is string sum)
                         {
-                            d.Children.Add(new KeyChildren(prop.Name) {Children = {v}});
+                            d.Children.Add(new KeyChildren(prop.Name) {Children = {new KeyValue("", sum)}});
                         }
-                        else if ((prop.Name == "Duration" || prop.Name == "Timespan") && v is int ms)
+                        else if ((prop.Name == "Duration" || prop.Name == "Timespan") && value is int ms)
                         {
                             var ticks = (long) ms * 10000;
                             var ts = new TimeSpan(ticks);
@@ -84,7 +87,7 @@ namespace mediainfo_project_ng
                         }
                         else
                         {
-                            d.Children.Add(new KeyValue(prop.Name, v.ToString()));
+                            d.Children.Add(new KeyValue(prop.Name, value.ToString()));
                         }
 
                         break;
@@ -102,7 +105,7 @@ namespace mediainfo_project_ng
 
         private void MenuItemKeyValuePairCopy_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = (MenuItem)e.OriginalSource;
+            var s = (MenuItem) e.OriginalSource;
             var keyValue = (KeyValue) s.DataContext;
             Clipboard.SetText($"{keyValue.Key}: {keyValue.Value}");
         }

@@ -61,6 +61,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converter\ChapterCountToStateConverter.cs" />
+    <Compile Include="Converter\ErrorLevelToIconConverter.cs" />
     <Compile Include="Converter\FpsModeToTextConverter.cs" />
     <Compile Include="Converter\InfoToBackgroundConverter.cs" />
     <Compile Include="Converter\InfoToForegroundConverter.cs" />
