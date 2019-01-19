@@ -95,7 +95,7 @@ namespace mediainfo_project_ng
         {
             var filenameReg =
                 new Regex(
-                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)+)\]\.mkv$");
+                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
             var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath));
             if (!match.Success) return true;
             var profile = GenerateProfileString(info.VideoInfos[0].Profile);
