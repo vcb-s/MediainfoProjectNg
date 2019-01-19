@@ -8,13 +8,15 @@
         mc:Ignorable="d"
         Title="{Binding Path=TitleString, Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
         ResizeMode="CanResizeWithGrip"
-        xml:lang="zh-CN">
+        xml:lang="zh-CN"
+        Closing="MainWindow_OnClosing">
     <Window.Resources>
         <local:FileInfos x:Key="FileInfos" />
         <local:MainWindowViewModel x:Key="WindowViewModel" />
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+        <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
     </Window.Resources>
     <Grid>
         <DockPanel>
@@ -57,7 +59,7 @@
                             </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
-                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0].Fps}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0] ,Converter={StaticResource FpsModeToTextConverter}}" />
                         <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />
@@ -73,6 +75,7 @@
                         <Style TargetType="DataGridRow">
                             <Setter Property="Background" Value="{Binding Converter={StaticResource BackgroundConverter}}" />
                             <Setter Property="Foreground" Value="{Binding Converter={StaticResource ForegroundConverter}}" />
+                            <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_OnMouseDoubleClick" />
                         </Style>
                     </DataGrid.RowStyle>
                     <DataGrid.CellStyle>

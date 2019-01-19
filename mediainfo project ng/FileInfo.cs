@@ -2,10 +2,32 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Media;
 using MediaInfoLib;
 
 namespace mediainfo_project_ng
 {
+    public enum ErrorLevel
+    {
+        info,
+        warning,
+        error
+    }
+
+    public class ProfileInfo
+    {
+        public string Profile { get; }
+        public string Level { get; }
+        public ProfileInfo(string profileString)
+        {
+            var strs = profileString.Split('@');
+            if (strs.Length > 0)
+                Profile = strs[0];
+            if (strs.Length > 1)
+                Level = strs[1];
+        }
+    }
+
     public class GeneralInfo
     {
         public string Filename { get; set; }
@@ -23,6 +45,7 @@ namespace mediainfo_project_ng
     {
         public string Format { get; set; }
         public string FormatProfile { get; set; }
+        public string FpsMode { get; set; }
         public string Fps { get; set; }
         public int Bitrate { get; set; }
         public int BitDepth { get; set; }
@@ -30,6 +53,8 @@ namespace mediainfo_project_ng
         public int Height { get; set; }
         public int Width { get; set; }
         public string Language { get; set; }
+        public int Delay { get; set; }
+        public ProfileInfo Profile { get; set; }
     }
 
     public class AudioInfo
@@ -39,6 +64,7 @@ namespace mediainfo_project_ng
         public int Bitrate { get; set; }
         public int Duration { get; set; }
         public string Language { get; set; }
+        public int Delay { get; set; }
     }
 
     public class ChapterInfo
@@ -48,12 +74,20 @@ namespace mediainfo_project_ng
         public string Language { get; set; }
     }
 
+    public class ErrorInfo
+    {
+        public ErrorLevel Level { get; set; }
+        public string Description { get; set; }
+        public Brush Brush { get; set; }
+    }
+
     public class FileInfo
     {
         public GeneralInfo GeneralInfo { get; } = new GeneralInfo();
         public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
         public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
+//        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
 
         public FileInfo(string url)
@@ -98,14 +132,31 @@ namespace mediainfo_project_ng
                     {
                         Format        = MI.Get(StreamKind.Video, i, "Format"),
                         FormatProfile = MI.Get(StreamKind.Video, i, "Format_Profile"),
+                        FpsMode       = MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
                         Fps           = MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
                         Bitrate       = MI.Get(StreamKind.Video, i, "BitRate").TryParseAsInt() / 1000,
                         BitDepth      = MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsInt(),
                         Duration      = MI.Get(StreamKind.Video, i, "Duration").TryParseAsInt(),
                         Height        = MI.Get(StreamKind.Video, i, "Height").TryParseAsInt(),
                         Width         = MI.Get(StreamKind.Video, i, "Width").TryParseAsInt(),
-                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper()
+                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
+                        Delay         = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt(),
+                        Profile       = new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
                     });
+#if DEBUG
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Height"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Sampled_Width"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "Sampled_Height"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio/String"));
+                    Debug.WriteLine(MI.Get(StreamKind.Video, i, "PixelAspectRatio_Original"));
+                    Debug.WriteLine("ScanType:" + MI.Get(StreamKind.Video, i, "ScanType"));
+                    Debug.WriteLine("ScanType/String:" + MI.Get(StreamKind.Video, i, "ScanType/String"));
+                    Debug.WriteLine("FormatProfile:" + MI.Get(StreamKind.Video, i, "Format_Profile"));
+                    Debug.WriteLine("FormatLevel:" + MI.Get(StreamKind.Video, i, "Format_Level"));
+                    Debug.WriteLine("FormatTier:" + MI.Get(StreamKind.Video, i, "Format_Tier"));
+#endif
                 }
 
                 for (var i = 0; i < GeneralInfo.AudioCount; i++)
@@ -116,7 +167,8 @@ namespace mediainfo_project_ng
                         BitDepth = MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsInt(),
                         Bitrate  = MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsInt() / 1000,
                         Duration = MI.Get(StreamKind.Audio, i, "Duration").TryParseAsInt(),
-                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper()
+                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
+                        Delay    = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt()
                     });
                 }
 

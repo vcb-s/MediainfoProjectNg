@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -114,6 +115,20 @@ namespace mediainfo_project_ng
             {
                 _fileInfos.Remove(item);
             }
+        }
+
+        private void DataGridRow_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is DataGridRow)) return;
+            var row = (DataGridRow) sender;
+            var q = (FileInfo) row.Item;
+            var win = new TechnicalWindow(q);
+            win.Show();
+        }
+
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

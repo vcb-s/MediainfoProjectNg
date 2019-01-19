@@ -61,8 +61,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converter\ChapterCountToStateConverter.cs" />
+    <Compile Include="Converter\ErrorLevelToIconConverter.cs" />
+    <Compile Include="Converter\FpsModeToTextConverter.cs" />
     <Compile Include="Converter\InfoToBackgroundConverter.cs" />
     <Compile Include="Converter\InfoToForegroundConverter.cs" />
+    <Compile Include="TechnicalWindow.xaml.cs">
+      <DependentUpon>TechnicalWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="ViewModels.cs" />
     <Page Include="MainWindow.xaml">
@@ -78,6 +83,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="TechnicalWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MediaInfoDLL.cs" />
