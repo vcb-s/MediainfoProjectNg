@@ -140,7 +140,7 @@ namespace mediainfo_project_ng
                         Height        = MI.Get(StreamKind.Video, i, "Height").TryParseAsInt(),
                         Width         = MI.Get(StreamKind.Video, i, "Width").TryParseAsInt(),
                         Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
-                        Delay         = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsInt(),
+                        Delay         = MI.Get(StreamKind.Video, i, "Delay").TryParseAsInt(),
                         Profile       = new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
                     });
 #if DEBUG
