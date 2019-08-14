@@ -9,9 +9,9 @@ namespace mediainfo_project_ng
 {
     public enum ErrorLevel
     {
-        info,
-        warning,
-        error
+        Info,
+        Warning,
+        Error
     }
 
     public class ProfileInfo

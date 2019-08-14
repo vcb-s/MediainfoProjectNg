@@ -193,7 +193,7 @@ namespace mediainfo_project_ng
             {
                 ret.Add(new ErrorInfo
                 {
-                    Level = ErrorLevel.error,
+                    Level = ErrorLevel.Error,
                     Description = $"文件后缀和与容器不符。后缀：{extension}，容器{info.GeneralInfo.Format}",
                     Brush = Brushes.Red
                 });
@@ -203,7 +203,7 @@ namespace mediainfo_project_ng
             {
                 ret.Add(new ErrorInfo
                 {
-                    Level = ErrorLevel.warning,
+                    Level = ErrorLevel.Warning,
                     Description = "容器中含有延时非 0 的轨道。",
                     Brush = new SolidColorBrush(Color.FromRgb(0, 164, 172))
                 });
@@ -218,7 +218,7 @@ namespace mediainfo_project_ng
                 {
                     ret.Add(new ErrorInfo
                     {
-                        Level = ErrorLevel.warning,
+                        Level = ErrorLevel.Warning,
                         Description = "轨道间长度相差过大。",
                         Brush = Brushes.PaleVioletRed
                     });
@@ -230,7 +230,7 @@ namespace mediainfo_project_ng
                     {
                         ret.Add(new ErrorInfo
                         {
-                            Level = ErrorLevel.warning,
+                            Level = ErrorLevel.Warning,
                             Description = "文件只有一个章节。",
                             Brush = Brushes.Yellow
                         });
@@ -239,7 +239,7 @@ namespace mediainfo_project_ng
                     {
                         ret.Add(new ErrorInfo
                         {
-                            Level = ErrorLevel.warning,
+                            Level = ErrorLevel.Warning,
                             Description = "文件存在多组章节。",
                             Brush = Brushes.Yellow
                         });
@@ -248,7 +248,7 @@ namespace mediainfo_project_ng
                     {
                         ret.Add(new ErrorInfo
                         {
-                            Level = ErrorLevel.warning,
+                            Level = ErrorLevel.Warning,
                             Description = "文件末尾有无用章节。",
                             Brush = Brushes.Yellow
                         });
@@ -257,7 +257,7 @@ namespace mediainfo_project_ng
                     {
                         ret.Add(new ErrorInfo
                         {
-                            Level = ErrorLevel.warning,
+                            Level = ErrorLevel.Warning,
                             Description = "首个章节时间戳非零。",
                             Brush = Brushes.Yellow
                         });
@@ -268,7 +268,7 @@ namespace mediainfo_project_ng
                 {
                     ret.Add(new ErrorInfo
                     {
-                        Level = ErrorLevel.error,
+                        Level = ErrorLevel.Error,
                         Description = "内容物和文件名描述不符。",
                         Brush = Brushes.Violet
                     });
@@ -278,7 +278,7 @@ namespace mediainfo_project_ng
                 {
                     ret.Add(new ErrorInfo
                     {
-                        Level = ErrorLevel.info,
+                        Level = ErrorLevel.Info,
                         Description = "文件含有多条音轨。",
                         Brush = Brushes.GreenYellow
                     });
