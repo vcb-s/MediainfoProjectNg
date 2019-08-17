@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -21,7 +17,7 @@ namespace mediainfo_project_ng.Converter
             switch (info.Fps)
             {
                 case "23.976 (24000/1001)":
-                    return Binding.DoNothing;
+                    return DependencyProperty.UnsetValue;
                 case "29.970 (30000/1001)":
                 case "59.940 (60000/1001)":
                     return Brushes.Olive;
