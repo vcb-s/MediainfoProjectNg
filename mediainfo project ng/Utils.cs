@@ -86,9 +86,9 @@ namespace mediainfo_project_ng
             return await Task.Run(() => new FileInfo(path));
         }
 
-        public static int TryParseAsInt(this string s)
+        public static long TryParseAsLong(this string s)
         {
-            return decimal.TryParse(s, out var i) ? (int) i : 0;
+            return decimal.TryParse(s, out var i) ? (long) i : 0;
         }
 
         public static bool FileNameContentMatched(FileInfo info)
@@ -209,7 +209,7 @@ namespace mediainfo_project_ng
                 });
             }
 
-            var duration = new List<int>();
+            var duration = new List<long>();
             duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration));
             duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));
             if (duration.Count > 0)
