@@ -176,14 +176,13 @@ namespace mediainfo_project_ng
                 {
                     var chapPosBegin = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_Begin").TryParseAsLong();
                     var chapPosEnd = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong();
-                    for (var i = chapPosBegin;i < chapPosEnd; i++)
+                    for (var i = chapPosBegin; i < chapPosEnd; i++)
                     {
-                        var a = GeneralInfo.Format == "Matroska" ? MI.Get(StreamKind.Menu, 0, i, InfoKind.Text).Split(new[] {':'}, 2) : new[] {"", MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)};
                         ChapterInfos.Add(new ChapterInfo
                         {
                             Timespan = MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
-                            Language = a[0],
-                            Name     = a[1]
+                            Language = "",
+                            Name     = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
                         });
                     }
                 }
