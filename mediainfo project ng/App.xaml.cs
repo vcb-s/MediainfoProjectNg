@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 
 namespace mediainfo_project_ng
 {
