@@ -47,3 +47,11 @@ Jan 19, 2019
 * Add filename-content mismatch detection (super lazy, use with caution).
 * Show VFR video as VFR rather than average framerate.
 
+## 0.1.6
+
+Apr 5, 2022
+
+* Add framerate color
+* Fix fps color rendering problem
+* Extend data structure length to avoid data overflow
+* Mitigate chapter name parsing issue
