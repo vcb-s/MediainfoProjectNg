@@ -17,6 +17,7 @@
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
         <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
+        <converter:FpsToTextColorConverter x:Key="FpsToTextColorConverter" />
     </Window.Resources>
     <Grid>
         <DockPanel>
@@ -59,7 +60,19 @@
                             </DataGridTextColumn.Binding>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
-                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0] ,Converter={StaticResource FpsModeToTextConverter}}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0], Converter={StaticResource FpsModeToTextConverter}}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource FpsToTextColorConverter}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />
