@@ -3,8 +3,6 @@
 # Set the version in the projects AssemblyInfo.cs file
 #
 
-$env:Path += ';C:\msys64\usr\bin'
-
 # Get version info from Git. example 1.2.3-45-g6789abc
 $gitVersion = git describe --long --always;
 $gitBranch = git rev-parse --abbrev-ref HEAD;
