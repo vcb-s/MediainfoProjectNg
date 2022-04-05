@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
     [ValueConversion(typeof(VideoInfo), typeof(string))]
     public class FpsModeToTextConverter : IValueConverter

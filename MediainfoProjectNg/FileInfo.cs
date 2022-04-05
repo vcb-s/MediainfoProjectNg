@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Media;
 using MediaInfoLib;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     public enum ErrorLevel
     {

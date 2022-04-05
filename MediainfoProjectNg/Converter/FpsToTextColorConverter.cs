@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
     [ValueConversion(typeof(VideoInfo), typeof(Brush))]
     public class FpsToTextColorConverter : IValueConverter

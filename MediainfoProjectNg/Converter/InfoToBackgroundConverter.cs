@@ -6,17 +6,21 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
     [ValueConversion(typeof(FileInfo), typeof(Brush))]
-    public class InfoToForegroundConverter : IValueConverter
+    public class InfoToBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (targetType != typeof(Brush)) return null;
             if (!(value is FileInfo info)) return null;
+            // TODO: Unify two checks
+            var errorInfos = Utils.CheckFile(info);
 
-            return info.GeneralInfo.TextCount > 0 ? Brushes.Blue : Brushes.Black;
+            var errorInfo = errorInfos.FirstOrDefault();
+
+            return errorInfo == null ? Brushes.White : errorInfo.Brush;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

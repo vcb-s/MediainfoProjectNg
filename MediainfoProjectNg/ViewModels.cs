@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     internal class BaseViewModel : INotifyPropertyChanged
     {

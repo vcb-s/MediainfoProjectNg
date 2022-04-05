@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     /// <summary>
     /// App.xaml 的交互逻辑

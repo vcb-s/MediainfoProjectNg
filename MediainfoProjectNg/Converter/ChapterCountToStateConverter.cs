@@ -1,22 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Windows;
 using System.Windows.Data;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
-    [ValueConversion(typeof(object), typeof(object))]
-    class ErrorLevelToIconConverter : IValueConverter
+    [ValueConversion(typeof(string), typeof(string))]
+    public class ChapterCountToStateConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (targetType != typeof(string)) return null;
+            var chapter = int.Parse(value?.ToString() ?? "0");
+            return chapter != 0 ? "有" : "";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

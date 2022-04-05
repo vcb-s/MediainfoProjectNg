@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     static class Utils
     {

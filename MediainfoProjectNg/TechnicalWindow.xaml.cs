@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     class KeyValue
     {

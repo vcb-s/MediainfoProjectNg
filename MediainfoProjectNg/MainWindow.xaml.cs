@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MediaInfoLib;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
