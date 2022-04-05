@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace MediainfoProjectNg.Converter
@@ -9,7 +10,7 @@ namespace MediainfoProjectNg.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(string)) return null;
+            if (targetType != typeof(string)) return DependencyProperty.UnsetValue;
             var chapter = int.Parse(value?.ToString() ?? "0");
             return chapter != 0 ? "有" : "";
         }

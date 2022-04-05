@@ -69,7 +69,10 @@ namespace MediainfoProjectNg
                         for (var i = 0; i < list.Count; i++)
                         {
                             var item = list[i];
-                            keyChildren.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
+                            if (item is not null)
+                            {
+                                keyChildren.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
+                            }
                         }
 
                         d.Children.Add(keyChildren);
@@ -87,7 +90,7 @@ namespace MediainfoProjectNg
                         }
                         else
                         {
-                            d.Children.Add(new KeyValue(prop.Name, value.ToString()));
+                            d.Children.Add(new KeyValue(prop.Name, value?.ToString() ?? ""));
                         }
 
                         break;

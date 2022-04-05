@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -13,8 +14,8 @@ namespace MediainfoProjectNg.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(Brush)) return null;
-            if (!(value is FileInfo info)) return null;
+            if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
+            if (value is not FileInfo info) return DependencyProperty.UnsetValue;
             // TODO: Unify two checks
             var errorInfos = Utils.CheckFile(info);
 

@@ -16,7 +16,7 @@ namespace MediainfoProjectNg
     public partial class MainWindow
     {
         private readonly FileInfos _fileInfos;
-        private static MainWindowViewModel _mainWindowViewModel;
+        private readonly MainWindowViewModel _mainWindowViewModel;
         public MainWindow()
         {
             InitializeComponent();
@@ -27,7 +27,7 @@ namespace MediainfoProjectNg
             var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
 
-            MediaInfo MI = null;
+            MediaInfo? MI = null;
             try
             {
                 MI = new MediaInfo();
@@ -63,7 +63,7 @@ namespace MediainfoProjectNg
             {
                 while (!sr.EndOfStream)
                 {
-                    fileList.Add(await sr.ReadLineAsync());
+                    fileList.Add((await sr.ReadLineAsync())!);
                 }
             }
             

@@ -16,8 +16,8 @@ namespace MediainfoProjectNg
 
     public class ProfileInfo
     {
-        public string Profile { get; }
-        public string Level { get; }
+        public string? Profile { get; }
+        public string? Level { get; }
         public ProfileInfo(string profileString)
         {
             var strs = profileString.Split('@');
@@ -38,6 +38,18 @@ namespace MediainfoProjectNg
         public long AudioCount { get; set; }
         public long TextCount { get; set; }
         public long ChapterCount { get; set; }
+
+        public GeneralInfo(string filename, string fullPath, string format, long bitrate, long videoCount, long audioCount, long textCount, long chapterCount)
+        {
+            Filename = filename;
+            FullPath = fullPath;
+            Format = format;
+            Bitrate = bitrate;
+            VideoCount = videoCount;
+            AudioCount = audioCount;
+            TextCount = textCount;
+            ChapterCount = chapterCount;
+        }
     }
 
     // TODO: Using actual type instead of string
@@ -55,6 +67,22 @@ namespace MediainfoProjectNg
         public string Language { get; set; }
         public long Delay { get; set; }
         public ProfileInfo Profile { get; set; }
+
+        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile)
+        {
+            Format = format;
+            FormatProfile = formatProfile;
+            FpsMode = fpsMode;
+            Fps = fps;
+            Bitrate = bitrate;
+            BitDepth = bitDepth;
+            Duration = duration;
+            Height = height;
+            Width = width;
+            Language = language;
+            Delay = delay;
+            Profile = profile;
+        }
     }
 
     public class AudioInfo
@@ -65,6 +93,16 @@ namespace MediainfoProjectNg
         public long Duration { get; set; }
         public string Language { get; set; }
         public long Delay { get; set; }
+
+        public AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay)
+        {
+            Format = format;
+            BitDepth = bitDepth;
+            Bitrate = bitrate;
+            Duration = duration;
+            Language = language;
+            Delay = delay;
+        }
     }
 
     public class ChapterInfo
@@ -72,6 +110,13 @@ namespace MediainfoProjectNg
         public int Timespan { get; set; }
         public string Name { get; set; }
         public string Language { get; set; }
+
+        public ChapterInfo(int timespan, string name, string language)
+        {
+            Timespan = timespan;
+            Name = name;
+            Language = language;
+        }
     }
 
     public class ErrorInfo
@@ -79,11 +124,18 @@ namespace MediainfoProjectNg
         public ErrorLevel Level { get; set; }
         public string Description { get; set; }
         public Brush Brush { get; set; }
+
+        public ErrorInfo(ErrorLevel level, string description, Brush brush)
+        {
+            Level = level;
+            Description = description;
+            Brush = brush;
+        }
     }
 
     public class FileInfo
     {
-        public GeneralInfo GeneralInfo { get; } = new GeneralInfo();
+        public GeneralInfo GeneralInfo { get; }
         public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
         public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
@@ -97,7 +149,7 @@ namespace MediainfoProjectNg
             var sw = new Stopwatch();
             sw.Start();
 #endif
-            MediaInfo MI = null;
+            MediaInfo? MI = null;
             try
             {
                 MI = new MediaInfo();
@@ -105,13 +157,17 @@ namespace MediainfoProjectNg
                 MI.Option("Complete");
                 Summary = MI.Inform();
 
-                GeneralInfo.Filename   = Path.GetFileNameWithoutExtension(url);
-                GeneralInfo.FullPath   = url;
-                GeneralInfo.Format     = MI.Get(StreamKind.General, 0, "Format");
-                GeneralInfo.Bitrate    = MI.Get(StreamKind.General, 0, "OverallBitRate").TryParseAsLong() / 1000;
-                GeneralInfo.VideoCount = MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsLong();
-                GeneralInfo.AudioCount = MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsLong();
-                GeneralInfo.TextCount  = MI.Get(StreamKind.General, 0, "TextCount").TryParseAsLong();
+                GeneralInfo = new GeneralInfo(
+                    filename:     Path.GetFileNameWithoutExtension(url),
+                    fullPath:     url,
+                    format:       MI.Get(StreamKind.General, 0, "Format"),
+                    bitrate:      MI.Get(StreamKind.General, 0, "OverallBitRate").TryParseAsLong() / 1000,
+                    videoCount:   MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsLong(),
+                    audioCount:   MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsLong(),
+                    textCount:    MI.Get(StreamKind.General, 0, "TextCount").TryParseAsLong(),
+                    chapterCount: -1
+                );
+
                 switch (MI.Get(StreamKind.General, 0, "MenuCount").TryParseAsLong())
                 {
                     case 0:
@@ -122,27 +178,25 @@ namespace MediainfoProjectNg
                                                    MI.Get(StreamKind.Menu, 0, "Chapters_Pos_Begin").TryParseAsLong();
                         break;
                     default:
-                        GeneralInfo.ChapterCount = -1;
                         break;
                 }
 
                 for (var i = 0; i < GeneralInfo.VideoCount; i++)
                 {
-                    VideoInfos.Add(new VideoInfo
-                    {
-                        Format        = MI.Get(StreamKind.Video, i, "Format"),
-                        FormatProfile = MI.Get(StreamKind.Video, i, "Format_Profile"),
-                        FpsMode       = MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
-                        Fps           = MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
-                        Bitrate       = MI.Get(StreamKind.Video, i, "BitRate").TryParseAsLong() / 1000,
-                        BitDepth      = MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsLong(),
-                        Duration      = MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
-                        Height        = MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
-                        Width         = MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
-                        Language      = MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
-                        Delay         = MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
-                        Profile       = new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
-                    });
+                    VideoInfos.Add(new VideoInfo(
+                        format:        MI.Get(StreamKind.Video, i, "Format"),
+                        formatProfile: MI.Get(StreamKind.Video, i, "Format_Profile"),
+                        fpsMode:       MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
+                        fps:           MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
+                        bitrate:       MI.Get(StreamKind.Video, i, "BitRate").TryParseAsLong() / 1000,
+                        bitDepth:      MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsLong(),
+                        duration:      MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
+                        height:        MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
+                        width:         MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
+                        language:      MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
+                        delay:         MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
+                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
+                    ));
 #if DEBUG
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Height"));
@@ -161,15 +215,14 @@ namespace MediainfoProjectNg
 
                 for (var i = 0; i < GeneralInfo.AudioCount; i++)
                 {
-                    AudioInfos.Add(new AudioInfo
-                    {
-                        Format   = MI.Get(StreamKind.Audio, i, "Format"),
-                        BitDepth = MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsLong(),
-                        Bitrate  = MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsLong() / 1000,
-                        Duration = MI.Get(StreamKind.Audio, i, "Duration").TryParseAsLong(),
-                        Language = MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
-                        Delay    = MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong()
-                    });
+                    AudioInfos.Add(new AudioInfo(
+                        format:   MI.Get(StreamKind.Audio, i, "Format"),
+                        bitDepth: MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsLong(),
+                        bitrate:  MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsLong() / 1000,
+                        duration: MI.Get(StreamKind.Audio, i, "Duration").TryParseAsLong(),
+                        language: MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
+                        delay:    MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong()
+                    ));
                 }
 
                 if (GeneralInfo.ChapterCount > 0)
@@ -178,12 +231,11 @@ namespace MediainfoProjectNg
                     var chapPosEnd = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong();
                     for (var i = chapPosBegin; i < chapPosEnd; i++)
                     {
-                        ChapterInfos.Add(new ChapterInfo
-                        {
-                            Timespan = MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
-                            Language = "",
-                            Name     = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
-                        });
+                        ChapterInfos.Add(new ChapterInfo(
+                            timespan: MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
+                            language: "",
+                            name:     MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
+                        ));
                     }
                 }
 

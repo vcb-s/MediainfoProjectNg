@@ -51,7 +51,7 @@ namespace MediainfoProjectNg
         }
 
         public static async Task<(IEnumerable<FileInfo> info, long duration)> Load(string[] urls,
-            Func<string, bool> filter = null, Action<string> progressCallback = null)
+            Func<string, bool>? filter = null, Action<string>? progressCallback = null)
         {
             var fileInfos = new List<FileInfo>();
             var sw = new Stopwatch();
@@ -59,7 +59,10 @@ namespace MediainfoProjectNg
             foreach (var file in urls.Where(File.Exists))
             {
                 var info = await LoadFile(file, filter, progressCallback);
-                fileInfos.Add(info);
+                if (info is not null)
+                {
+                    fileInfos.Add(info);
+                }
             }
 
             foreach (var dir in urls.Where(Directory.Exists))
@@ -68,16 +71,19 @@ namespace MediainfoProjectNg
                 foreach (var file in EnumerateFolder(dir))
                 {
                     var info = await LoadFile(file, filter, progressCallback);
-                    fileInfos.Add(info);
+                    if (info is not null)
+                    {
+                        fileInfos.Add(info);
+                    }
                 }
             }
 
             sw.Stop();
-            return (fileInfos.Where(item => item != null), sw.ElapsedMilliseconds);
+            return (fileInfos.Where(item => item is not null), sw.ElapsedMilliseconds);
         }
 
-        public static async Task<FileInfo> LoadFile(string path, Func<string, bool> filter = null,
-            Action<string> progressCallback = null)
+        public static async Task<FileInfo?> LoadFile(string path, Func<string, bool>? filter = null,
+            Action<string>? progressCallback = null)
         {
             if (!File.Exists(path)) return null;
             if (ExcludeExts.Contains(Path.GetExtension(path))) return null;
@@ -96,7 +102,7 @@ namespace MediainfoProjectNg
             var filenameReg =
                 new Regex(
                     @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
-            var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath));
+            var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
             var profile = GenerateProfileString(info.VideoInfos[0].Profile);
             if (profile == "") return true;
@@ -162,7 +168,7 @@ namespace MediainfoProjectNg
         {
             var audios = new Dictionary<string, int>();
             var ret = "";
-            foreach (var info in infos)
+            foreach (AudioInfo info in infos)
             {
                 if (!audios.ContainsKey(info.Format))
                 {
@@ -191,22 +197,20 @@ namespace MediainfoProjectNg
             if (info.GeneralInfo.Format == "Matroska" && !Matroska.Contains(extension)
                 || info.GeneralInfo.Format == "MPEG-4" && !MPEG_4.Contains(extension))
             {
-                ret.Add(new ErrorInfo
-                {
-                    Level = ErrorLevel.Error,
-                    Description = $"文件后缀和与容器不符。后缀：{extension}，容器{info.GeneralInfo.Format}",
-                    Brush = Brushes.Red
-                });
+                ret.Add(new ErrorInfo(
+                    level:       ErrorLevel.Error,
+                    description: $"文件后缀和与容器不符。后缀：{extension}，容器{info.GeneralInfo.Format}",
+                    brush:       Brushes.Red
+                ));
             }
 
             if (info.VideoInfos.Any(o => o.Delay != 0) || info.AudioInfos.Any(o => o.Delay != 0))
             {
-                ret.Add(new ErrorInfo
-                {
-                    Level = ErrorLevel.Warning,
-                    Description = "容器中含有延时非 0 的轨道。",
-                    Brush = new SolidColorBrush(Color.FromRgb(0, 164, 172))
-                });
+                ret.Add(new ErrorInfo(
+                    level:       ErrorLevel.Warning,
+                    description: "容器中含有延时非 0 的轨道。",
+                    brush:       new SolidColorBrush(Color.FromRgb(0, 164, 172))
+                ));
             }
 
             var duration = new List<long>();
@@ -216,72 +220,65 @@ namespace MediainfoProjectNg
             {
                 if (duration.Max() - duration.Min() > 600)
                 {
-                    ret.Add(new ErrorInfo
-                    {
-                        Level = ErrorLevel.Warning,
-                        Description = "轨道间长度相差过大。",
-                        Brush = Brushes.PaleVioletRed
-                    });
+                    ret.Add(new ErrorInfo(
+                        level:       ErrorLevel.Warning,
+                        description: "轨道间长度相差过大。",
+                        brush:       Brushes.PaleVioletRed
+                    ));
                 }
 
                 if (info.GeneralInfo.ChapterCount != 0)
                 {
                     if (info.GeneralInfo.ChapterCount == 1)
                     {
-                        ret.Add(new ErrorInfo
-                        {
-                            Level = ErrorLevel.Warning,
-                            Description = "文件只有一个章节。",
-                            Brush = Brushes.Yellow
-                        });
+                        ret.Add(new ErrorInfo(
+                            level:       ErrorLevel.Warning,
+                            description: "文件只有一个章节。",
+                            brush:       Brushes.Yellow
+                        ));
                     }
                     else if (info.GeneralInfo.ChapterCount == -1)
                     {
-                        ret.Add(new ErrorInfo
-                        {
-                            Level = ErrorLevel.Warning,
-                            Description = "文件存在多组章节。",
-                            Brush = Brushes.Yellow
-                        });
+                        ret.Add(new ErrorInfo(
+                            level:       ErrorLevel.Warning,
+                            description: "文件存在多组章节。",
+                            brush:       Brushes.Yellow
+                        ));
                     }
                     else if (info.ChapterInfos.Last().Timespan > duration.Max() - 1100)
                     {
-                        ret.Add(new ErrorInfo
-                        {
-                            Level = ErrorLevel.Warning,
-                            Description = "文件末尾有无用章节。",
-                            Brush = Brushes.Yellow
-                        });
+                        ret.Add(new ErrorInfo(
+                            level:       ErrorLevel.Warning,
+                            description: "文件末尾有无用章节。",
+                            brush:       Brushes.Yellow
+                        ));
                     }
                     else if (info.ChapterInfos.First().Timespan != 0)
                     {
-                        ret.Add(new ErrorInfo
-                        {
-                            Level = ErrorLevel.Warning,
-                            Description = "首个章节时间戳非零。",
-                            Brush = Brushes.Yellow
-                        });
+                        ret.Add(new ErrorInfo(
+                            level:       ErrorLevel.Warning,
+                            description: "首个章节时间戳非零。",
+                            brush:       Brushes.Yellow
+                        ));
                     }
                 }
 
                 if (!FileNameContentMatched(info))
                 {
-                    ret.Add(new ErrorInfo
-                    {
-                        Level = ErrorLevel.Error,
-                        Description = "内容物和文件名描述不符。",
-                        Brush = Brushes.Violet
-                    });
+                    ret.Add(new ErrorInfo(
+                        level:       ErrorLevel.Error,
+                        description: "内容物和文件名描述不符。",
+                        brush:       Brushes.Violet
+                    ));
                 }
 
                 if (info.AudioInfos.Count > 2)
                 {
-                    ret.Add(new ErrorInfo
-                    {
-                        Level = ErrorLevel.Info,
-                        Description = "文件含有多条音轨。",
-                        Brush = Brushes.GreenYellow
-                    });
+                    ret.Add(new ErrorInfo(
+                        level:       ErrorLevel.Info,
+                        description: "文件含有多条音轨。",
+                        brush:       Brushes.GreenYellow
+                    ));
                 }
             }
 
