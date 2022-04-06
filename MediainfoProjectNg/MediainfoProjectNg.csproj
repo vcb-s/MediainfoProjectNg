@@ -8,6 +8,7 @@
     <Platforms>x64</Platforms>
     <Authors>Mark Wu</Authors>
     <NeutralLanguage>zh-Hans</NeutralLanguage>
+    <PublishSingleFile>true</PublishSingleFile>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
