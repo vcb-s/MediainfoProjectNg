@@ -54,7 +54,9 @@ namespace MediainfoProjectNg
 #endif
         }
 
+#pragma warning disable CS1998 // Disable await warning in non-debug build
         private async void Button1_Click(object sender, RoutedEventArgs e)
+#pragma warning restore CS1998
         {
 #if DEBUG
             var fileList = new List<string>();
