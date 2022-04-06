@@ -24,7 +24,7 @@ jobs:
     - name: Publish with dotnet
       run: dotnet publish MediainfoProjectNg --configuration Release --no-build --runtime ${{ matrix.runtime-identifier }} --self-contained false
     - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'MediainfoPorjectNg'
-          path: MediainfoProjectNg\bin\Release\net6.0-windows\win-x64\publish\**
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'MediainfoPorjectNg'
+        path: MediainfoProjectNg\bin\Release\net6.0-windows\win-x64\publish\**
