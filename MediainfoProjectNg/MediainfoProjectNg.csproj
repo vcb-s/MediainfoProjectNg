@@ -15,11 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties/AssemblyInfo_template.cs" />
+    <Compile Remove="Properties/AssemblyInfo*.cs" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="powershell -ExecutionPolicy ByPass -File &quot;$(ProjectDir)/../Scripts/InjectGitVersion.ps1&quot; &quot;$(ProjectDir)/&quot;" />
+    <ItemGroup>
+      <Compile Include="Properties/AssemblyInfo.cs" />
+    </ItemGroup>
   </Target>
 
 </Project>
