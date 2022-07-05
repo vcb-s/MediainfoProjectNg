@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     class KeyValue
     {
@@ -69,7 +69,10 @@ namespace mediainfo_project_ng
                         for (var i = 0; i < list.Count; i++)
                         {
                             var item = list[i];
-                            keyChildren.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
+                            if (item is not null)
+                            {
+                                keyChildren.Children.Add(GetTreeStructure($"{item.GetType().Name}[{i}]", item));
+                            }
                         }
 
                         d.Children.Add(keyChildren);
@@ -87,7 +90,7 @@ namespace mediainfo_project_ng
                         }
                         else
                         {
-                            d.Children.Add(new KeyValue(prop.Name, value.ToString()));
+                            d.Children.Add(new KeyValue(prop.Name, value?.ToString() ?? ""));
                         }
 
                         break;

@@ -18,6 +18,7 @@ using System;
 using System.Runtime.InteropServices;
 
 #pragma warning disable 1591 // Disable XML documentation warnings
+#nullable disable // Disable nullable for this file is taken from libmediainfo
 
 namespace MediaInfoLib
 {

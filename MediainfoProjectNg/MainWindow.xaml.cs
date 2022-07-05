@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MediaInfoLib;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
@@ -16,7 +16,7 @@ namespace mediainfo_project_ng
     public partial class MainWindow
     {
         private readonly FileInfos _fileInfos;
-        private static MainWindowViewModel _mainWindowViewModel;
+        private readonly MainWindowViewModel _mainWindowViewModel;
         public MainWindow()
         {
             InitializeComponent();
@@ -27,7 +27,7 @@ namespace mediainfo_project_ng
             var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
 
-            MediaInfo MI = null;
+            MediaInfo? MI = null;
             try
             {
                 MI = new MediaInfo();
@@ -54,7 +54,9 @@ namespace mediainfo_project_ng
 #endif
         }
 
+#pragma warning disable CS1998 // Disable await warning in non-debug build
         private async void Button1_Click(object sender, RoutedEventArgs e)
+#pragma warning restore CS1998
         {
 #if DEBUG
             var fileList = new List<string>();
@@ -63,7 +65,7 @@ namespace mediainfo_project_ng
             {
                 while (!sr.EndOfStream)
                 {
-                    fileList.Add(await sr.ReadLineAsync());
+                    fileList.Add((await sr.ReadLineAsync())!);
                 }
             }
             

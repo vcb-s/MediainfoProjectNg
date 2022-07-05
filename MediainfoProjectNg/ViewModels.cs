@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace mediainfo_project_ng
+namespace MediainfoProjectNg
 {
     internal class BaseViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         protected void Notify(string propName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
