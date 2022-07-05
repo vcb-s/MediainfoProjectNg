@@ -1,23 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
-    [ValueConversion(typeof(VideoInfo), typeof(string))]
-    public class FpsModeToTextConverter : IValueConverter
+    [ValueConversion(typeof(FileInfo), typeof(Brush))]
+    public class InfoToForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(string)) return null;
-            if (!(value is VideoInfo info)) return null;
-            return info.FpsMode == "VFR" ? "VFR" : info.Fps;
+            if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
+            if (value is not FileInfo info) return DependencyProperty.UnsetValue;
+
+            return info.GeneralInfo.TextCount > 0 ? Brushes.Blue : Brushes.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

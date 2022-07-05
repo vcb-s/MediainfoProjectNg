@@ -1,23 +1,23 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
     [ValueConversion(typeof(VideoInfo), typeof(Brush))]
     public class FpsToTextColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(Brush)) return null;
-            if (!(value is VideoInfo info)) return null;
+            if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
+            if (value is not VideoInfo info) return DependencyProperty.UnsetValue;
             if (info.FpsMode == "VFR") return Brushes.DarkViolet;
             switch (info.Fps)
             {
                 case "23.976 (24000/1001)":
-                    return DependencyProperty.UnsetValue;
+                    return Binding.DoNothing;
                 case "29.970 (30000/1001)":
                 case "59.940 (60000/1001)":
                     return Brushes.Olive;

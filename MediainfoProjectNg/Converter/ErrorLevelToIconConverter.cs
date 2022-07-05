@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Data;
 
-namespace mediainfo_project_ng.Converter
+namespace MediainfoProjectNg.Converter
 {
     [ValueConversion(typeof(object), typeof(object))]
     class ErrorLevelToIconConverter : IValueConverter
