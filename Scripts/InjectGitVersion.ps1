@@ -16,7 +16,7 @@ if ($gitVersion -match '(.*)-(\d+)-[g](\w+)$')
 
     $fileVersion = $gitTag + "." + $gitCount;
     $infoVersion = $gitTag + "." + $gitCount + "-" + $gitSHA1;
-    if ($gitBranch -ne "master")
+    if ($gitBranch -ne "main")
     {
         $infoVersion += "-" + $gitBranch;
     }
