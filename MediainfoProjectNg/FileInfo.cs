@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.IO;
 using System.Windows.Media;
 using MediaInfoLib;
@@ -231,10 +233,16 @@ namespace MediainfoProjectNg
                     var chapPosEnd = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong();
                     for (var i = chapPosBegin; i < chapPosEnd; i++)
                     {
+                        var chapterName = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text);
+                        var language = string.Empty;
+                        if (GeneralInfo.Format == "Matroska")
+                        {
+                            (language, chapterName) = ParseMkvChapterName(chapterName);
+                        }
                         ChapterInfos.Add(new ChapterInfo(
                             timespan: MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
-                            language: "",
-                            name:     MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
+                            language: language,
+                            name:     chapterName
                         ));
                     }
                 }
@@ -248,6 +256,21 @@ namespace MediainfoProjectNg
             sw.Stop();
             Debug.WriteLine($"Loading: {url}\r\nCost {sw.ElapsedMilliseconds}ms! Length: {length}bytes");
 #endif
+        }
+
+        private static readonly HashSet<string> _validLanuageCode =
+            new HashSet<string>(CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+                .Where(culture => culture.TwoLetterISOLanguageName.Length == 2)
+                .Select(culture => culture.TwoLetterISOLanguageName));
+
+        private static (string language, string name) ParseMkvChapterName(string chapterInfoName)
+        {
+            var parts = chapterInfoName.Split(':', 2);
+            if (parts.Length == 1 || (parts[0] != string.Empty && !_validLanuageCode.Contains(parts[0])))
+            {
+                return (string.Empty, chapterInfoName);
+            }
+            return (parts[0], parts[1]);
         }
     }
 }

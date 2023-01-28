@@ -81,7 +81,7 @@
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[1].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
-                        <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.ChapterCount,Converter={StaticResource ChapterCountToStateConverter}}" />
+                        <DataGridTextColumn Header="章节" Binding="{Binding Path=ChapterInfos,Converter={StaticResource ChapterCountToStateConverter}}" />
                         <DataGridTextColumn Header="完整路径" Binding="{Binding Path=GeneralInfo.FullPath}" />
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>

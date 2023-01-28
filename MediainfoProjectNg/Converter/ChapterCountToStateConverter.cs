@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -11,8 +13,26 @@ namespace MediainfoProjectNg.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (targetType != typeof(string)) return DependencyProperty.UnsetValue;
-            var chapter = int.Parse(value?.ToString() ?? "0");
-            return chapter != 0 ? "有" : "";
+
+            var chapters = (List<ChapterInfo>)value;
+            if (chapters.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var firstChapLang = chapters[0].Language;
+            if (chapters.All(chapter => chapter.Language == firstChapLang))
+            {
+                if (firstChapLang == string.Empty)
+                {
+                    return "有";
+                }
+                return firstChapLang;
+            }
+            else
+            {
+                return "mix";
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
