@@ -231,11 +231,21 @@ namespace MediainfoProjectNg
                     var chapPosEnd = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong();
                     for (var i = chapPosBegin; i < chapPosEnd; i++)
                     {
-                        ChapterInfos.Add(new ChapterInfo(
-                            timespan: MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
-                            language: "",
-                            name:     MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
-                        ));
+                        var name = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text);
+                            string language = "";
+                            if (!string.IsNullOrWhiteSpace(name))
+                            {
+                                var idx = name.IndexOf(':');
+                                if (idx > 0)
+                                {
+                                    language = name.Substring(0, idx).Trim();
+                                }
+                            }
+                            ChapterInfos.Add(new ChapterInfo(
+                                timespan: MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
+                                language: language,
+                                name:     name
+                            ));
                     }
                 }
 

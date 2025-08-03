@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows;
 
 namespace MediainfoProjectNg
 {
@@ -259,6 +260,25 @@ namespace MediainfoProjectNg
                             level:       ErrorLevel.Warning,
                             description: "首个章节时间戳非零。",
                             brush:       Brushes.Yellow
+                        ));
+                    }
+                }
+                
+                if (info.GeneralInfo.ChapterCount > 0 && info.ChapterInfos.Any())
+                {
+                    var firstLang = info.ChapterInfos.First().Language ?? "";
+
+                    var inconsistent = info.ChapterInfos
+                        .Skip(1)
+                        .Any(chap => !string.IsNullOrEmpty(chap.Language) &&
+                                    !chap.Language.Equals(firstLang, StringComparison.OrdinalIgnoreCase));
+
+                    if (inconsistent)
+                    {
+                        ret.Add(new ErrorInfo(
+                            level:       ErrorLevel.Error,
+                            description: "章节语言不一致。",
+                            brush:       SystemColors.WindowBrush
                         ));
                     }
                 }

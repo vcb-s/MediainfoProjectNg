@@ -16,6 +16,8 @@
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+        <converter:UnifiedLanguageConverter x:Key="UnifiedLanguageConverter" />
+        <converter:ChapterLanguageToColorConverter x:Key="ChapterLanguageToColorConverter" />
         <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
         <converter:FpsToTextColorConverter x:Key="FpsToTextColorConverter" />
     </Window.Resources>
@@ -82,6 +84,20 @@
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[1].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.ChapterCount,Converter={StaticResource ChapterCountToStateConverter}}" />
+                        <DataGridTextColumn Header="章节语言" Binding="{Binding ChapterInfos, Converter={StaticResource UnifiedLanguageConverter}}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Background"
+                                                    Value="{Binding ChapterInfos, Converter={StaticResource ChapterLanguageToColorConverter}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="完整路径" Binding="{Binding Path=GeneralInfo.FullPath}" />
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
