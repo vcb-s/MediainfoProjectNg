@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Collections.Generic;
-using MediainfoProjectNg;
 
 namespace MediainfoProjectNg.Converter
 {
@@ -18,11 +17,14 @@ namespace MediainfoProjectNg.Converter
             if (value is not List<ChapterInfo> chapterInfos || chapterInfos.Count == 0)
                 return DependencyProperty.UnsetValue;
 
-            var firstLang = chapterInfos[0].Language ?? "";
-            bool allSame = chapterInfos.All(chap =>
-                string.Equals(chap.Language, firstLang, StringComparison.OrdinalIgnoreCase));
+            var chapterLanguages = chapterInfos
+                .Select(chap => chap.Language ?? "")
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
-            return allSame ? Binding.DoNothing : Brushes.Yellow;
+            bool hasLanguageIssues = chapterLanguages.Count > 1 || (chapterLanguages.Count == 1 && chapterLanguages[0] == "");
+
+            return hasLanguageIssues ? Brushes.Yellow : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
