@@ -263,23 +263,6 @@ namespace MediainfoProjectNg
                         ));
                     }
                 }
-                
-                if (info.GeneralInfo.ChapterCount > 0 && info.ChapterInfos.Any())
-                {
-                    var chapterLanguages = info.ChapterInfos
-                        .Select(chap => chap.Language ?? "")
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToList();
-
-                    if (chapterLanguages.Count > 1 || (chapterLanguages.Count == 1 && chapterLanguages[0] == ""))
-                    {
-                        ret.Add(new ErrorInfo(
-                            level:       ErrorLevel.Error,
-                            description: "章节语言存在问题。",
-                            brush:       SystemColors.WindowBrush
-                        ));
-                    }
-                }
 
                 if (!FileNameContentMatched(info))
                 {
