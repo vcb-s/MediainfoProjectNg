@@ -266,18 +266,16 @@ namespace MediainfoProjectNg
                 
                 if (info.GeneralInfo.ChapterCount > 0 && info.ChapterInfos.Any())
                 {
-                    var firstLang = info.ChapterInfos.First().Language ?? "";
+                    var chapterLanguages = info.ChapterInfos
+                        .Select(chap => chap.Language ?? "")
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToList();
 
-                    var inconsistent = info.ChapterInfos
-                        .Skip(1)
-                        .Any(chap => !string.IsNullOrEmpty(chap.Language) &&
-                                    !chap.Language.Equals(firstLang, StringComparison.OrdinalIgnoreCase));
-
-                    if (inconsistent)
+                    if (chapterLanguages.Count > 1 || (chapterLanguages.Count == 1 && chapterLanguages[0] == ""))
                     {
                         ret.Add(new ErrorInfo(
                             level:       ErrorLevel.Error,
-                            description: "章节语言不一致。",
+                            description: "章节语言存在问题。",
                             brush:       SystemColors.WindowBrush
                         ));
                     }
