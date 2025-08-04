@@ -67,8 +67,9 @@ namespace MediainfoProjectNg
         public string Language { get; set; }
         public long Delay { get; set; }
         public ProfileInfo Profile { get; set; }
+        public string ColorSpace { get; set; }
 
-        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile)
+        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile, string colorSpace)
         {
             Format = format;
             FormatProfile = formatProfile;
@@ -82,6 +83,7 @@ namespace MediainfoProjectNg
             Language = language;
             Delay = delay;
             Profile = profile;
+            ColorSpace = colorSpace;
         }
     }
 
@@ -183,6 +185,15 @@ namespace MediainfoProjectNg
 
                 for (var i = 0; i < GeneralInfo.VideoCount; i++)
                 {
+                    var colorSpaceRaw = MI.Get(StreamKind.Video, i, "ColorSpace");
+                    var chromaSubsampling = MI.Get(StreamKind.Video, i, "ChromaSubsampling");
+                    string colorSpace = string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(colorSpaceRaw) && !string.IsNullOrWhiteSpace(chromaSubsampling))
+                    {
+                        colorSpace = colorSpaceRaw.ToUpper() + chromaSubsampling.Replace(":", "");
+                    }
+
                     VideoInfos.Add(new VideoInfo(
                         format:        MI.Get(StreamKind.Video, i, "Format"),
                         formatProfile: MI.Get(StreamKind.Video, i, "Format_Profile"),
@@ -195,7 +206,8 @@ namespace MediainfoProjectNg
                         width:         MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
                         language:      MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
                         delay:         MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
-                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
+                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile")),
+                        colorSpace:    colorSpace
                     ));
 #if DEBUG
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));

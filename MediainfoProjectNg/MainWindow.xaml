@@ -17,6 +17,7 @@
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
         <converter:UnifiedLanguageConverter x:Key="UnifiedLanguageConverter" />
+        <converter:ColorSpaceToColorConverter x:Key="ColorSpaceToColorConverter" />
         <converter:ChapterLanguageToColorConverter x:Key="ChapterLanguageToColorConverter" />
         <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
         <converter:FpsToTextColorConverter x:Key="FpsToTextColorConverter" />
@@ -70,6 +71,19 @@
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="False">
                                             <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource FpsToTextColorConverter}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="色彩空间" Binding="{Binding Path=VideoInfos[0].ColorSpace}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource ColorSpaceToColorConverter}}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
