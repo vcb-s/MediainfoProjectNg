@@ -205,11 +205,7 @@ namespace MediainfoProjectNg
                     var colorSpaceRaw = MI.Get(StreamKind.Video, i, "ColorSpace");
                     var chromaSubsampling = MI.Get(StreamKind.Video, i, "ChromaSubsampling");
                     string colorSpace = string.Empty;
-
-                    if (!string.IsNullOrWhiteSpace(colorSpaceRaw) && !string.IsNullOrWhiteSpace(chromaSubsampling))
-                    {
-                        colorSpace = colorSpaceRaw.ToUpper() + chromaSubsampling.Replace(":", "");
-                    }
+                    colorSpace = colorSpaceRaw.ToUpper() + chromaSubsampling.Replace(":", "");
 
                     var defaultRaw = MI.Get(StreamKind.Video, i, "Default").ToLower();
                     string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";

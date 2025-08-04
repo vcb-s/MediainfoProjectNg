@@ -76,7 +76,7 @@
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="色彩空间" Binding="{Binding Path=VideoInfos[0].ColorSpace}">
+                        <DataGridTextColumn Header="色彩格式" Binding="{Binding Path=VideoInfos[0].ColorSpace}">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="BorderThickness" Value="0" />
