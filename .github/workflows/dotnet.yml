@@ -28,5 +28,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: 'MediainfoPorjectNg'
+        name: 'MediainfoProjectNg'
         path: MediainfoProjectNg\bin\Release\net6.0-windows\win-x64\publish\**
