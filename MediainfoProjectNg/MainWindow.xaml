@@ -25,18 +25,22 @@
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem Width="600">
+                <StatusBarItem Width="350">
                     <TextBlock Text="{Binding StatusString}" />
                 </StatusBarItem>
-                <StatusBarItem>
+                <StatusBarItem Width="150">
                     <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
                 </StatusBarItem>
+                <StatusBarItem Width="150" HorizontalAlignment="Right">
+                    <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Click="ToggleRightPanelButton_Click"/>
+                </StatusBarItem>
             </StatusBar>
+            
             <Grid DataContext="{StaticResource FileInfos}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="200" />
                     <ColumnDefinition Width="2" />
-                    <ColumnDefinition Width="320" MinWidth="320" />
+                    <ColumnDefinition x:Name="RightPanelDef" Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
@@ -136,21 +140,13 @@
 
                 <!-- TODO: Fix the overflow problem when dragging the splitter -->
                 <!-- Microsoft to blame! -->
-                <Grid Grid.Column="2">
+                <Grid Grid.Column="2" x:Name="RightPanel">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="25" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Button x:Name="Button1" Grid.Row="0" HorizontalAlignment="Stretch"
-                                Content="Debug!" VerticalAlignment="Stretch" Margin="2" Click="Button1_Click" />
-                        <Button x:Name="Button2" Grid.Row="1" HorizontalAlignment="Stretch"
-                                Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
-                    </Grid>
+                    <Button x:Name="ClearButton" Grid.Row="0" HorizontalAlignment="Stretch"
+                             Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="ClearButton_Click" />
                     <TextBox Grid.Row="1" HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
