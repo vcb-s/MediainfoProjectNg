@@ -17,7 +17,7 @@ namespace MediainfoProjectNg.Converter
             if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
             if (value is not FileInfo info) return DependencyProperty.UnsetValue;
 
-            return info.GeneralInfo.TextCount > 0 ? Brushes.Blue : Brushes.Black;
+            return info.GeneralInfo.TextCount > 1 ? Brushes.Blue : Brushes.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

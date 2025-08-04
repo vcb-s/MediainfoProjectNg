@@ -89,14 +89,19 @@
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
+                        <DataGridTextColumn Header="视频默认" Binding="{Binding Path=VideoInfos[0].Default}" />
                         <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[0].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[0].Default}" />
                         <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=AudioInfos[1].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[1].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[1].Default}" />
+                        <DataGridTextColumn Header="字幕" Binding="{Binding Path=SubInfos[0].Format}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=SubInfos[0].Default}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.ChapterCount,Converter={StaticResource ChapterCountToStateConverter}}" />
                         <DataGridTextColumn Header="章节语言" Binding="{Binding ChapterInfos, Converter={StaticResource UnifiedLanguageConverter}}">
                             <DataGridTextColumn.CellStyle>
