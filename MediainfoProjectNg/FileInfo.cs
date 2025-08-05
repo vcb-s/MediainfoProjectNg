@@ -129,11 +129,13 @@ namespace MediainfoProjectNg
     {
         public string Format { get; set; }
         public string Default { get; set; }
+        public string Language { get; set; }
 
-        public SubInfo(string format, string isDefault)
+        public SubInfo(string format, string isDefault, string language)
         {
             Format = format;
             Default = isDefault;
+            Language = language;
         }
     }
 
@@ -219,7 +221,9 @@ namespace MediainfoProjectNg
                         duration:      MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
                         height:        MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
                         width:         MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
-                        language:      MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
+                        language: string.IsNullOrWhiteSpace(MI.Get(StreamKind.Video, i, "Language/String3"))
+                                        ? "UND"
+                                        : MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
                         delay:         MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
                         profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile")),
                         colorSpace:    colorSpace,
@@ -262,7 +266,8 @@ namespace MediainfoProjectNg
                     string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     SubInfos.Add(new SubInfo(
                         format:   MI.Get(StreamKind.Text, i, "Format"),
-                        isDefault:isDefault
+                        isDefault:isDefault,
+                        language:  MI.Get(StreamKind.Text, i, "Language/String3").ToUpper()
                     ));
                 }
 
@@ -274,12 +279,28 @@ namespace MediainfoProjectNg
                     {
                         var name = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text);
                         string language = "";
+
                         if (!string.IsNullOrWhiteSpace(name))
                         {
                             var idx = name.IndexOf(':');
                             if (idx > 0)
                             {
                                 language = name.Substring(0, idx).Trim();
+                                switch (language.ToLower())
+                                {
+                                    case "en":
+                                        language = "ENG";
+                                        break;
+                                    case "ja":
+                                        language = "JPN";
+                                        break;
+                                    case "zh":
+                                        language = "CHI";
+                                        break;
+                                    default:
+                                        language = language.ToUpper();
+                                        break;
+                                }
                             }
                         }
                         ChapterInfos.Add(new ChapterInfo(
