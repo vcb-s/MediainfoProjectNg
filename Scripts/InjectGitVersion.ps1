@@ -4,7 +4,7 @@
 #
 
 # Get version info from Git. example 1.2.3-45-g6789abc
-$gitVersion = git describe --long --always;
+$gitVersion = git describe --tags --long --always;
 $gitBranch = git rev-parse --abbrev-ref HEAD;
 
 # Parse Git version info into semantic pieces
