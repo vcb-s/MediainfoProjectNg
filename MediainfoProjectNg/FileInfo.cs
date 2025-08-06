@@ -67,8 +67,10 @@ namespace MediainfoProjectNg
         public string Language { get; set; }
         public long Delay { get; set; }
         public ProfileInfo Profile { get; set; }
+        public string ColorSpace { get; set; }
+        public string Default { get; set; }
 
-        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile)
+        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile, string colorSpace, string isDefault)
         {
             Format = format;
             FormatProfile = formatProfile;
@@ -82,6 +84,8 @@ namespace MediainfoProjectNg
             Language = language;
             Delay = delay;
             Profile = profile;
+            ColorSpace = colorSpace;
+            Default = isDefault;
         }
     }
 
@@ -93,8 +97,9 @@ namespace MediainfoProjectNg
         public long Duration { get; set; }
         public string Language { get; set; }
         public long Delay { get; set; }
+        public string Default { get; set; }
 
-        public AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay)
+        public AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay, string isDefault)
         {
             Format = format;
             BitDepth = bitDepth;
@@ -102,6 +107,7 @@ namespace MediainfoProjectNg
             Duration = duration;
             Language = language;
             Delay = delay;
+            Default = isDefault;
         }
     }
 
@@ -115,6 +121,20 @@ namespace MediainfoProjectNg
         {
             Timespan = timespan;
             Name = name;
+            Language = language;
+        }
+    }
+
+    public class SubInfo
+    {
+        public string Format { get; set; }
+        public string Default { get; set; }
+        public string Language { get; set; }
+
+        public SubInfo(string format, string isDefault, string language)
+        {
+            Format = format;
+            Default = isDefault;
             Language = language;
         }
     }
@@ -139,6 +159,7 @@ namespace MediainfoProjectNg
         public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
         public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
+        public List<SubInfo> SubInfos { get; } = new List<SubInfo>();
 //        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
 
@@ -183,6 +204,13 @@ namespace MediainfoProjectNg
 
                 for (var i = 0; i < GeneralInfo.VideoCount; i++)
                 {
+                    var colorSpaceRaw = MI.Get(StreamKind.Video, i, "ColorSpace");
+                    var chromaSubsampling = MI.Get(StreamKind.Video, i, "ChromaSubsampling");
+                    string colorSpace = string.Empty;
+                    colorSpace = colorSpaceRaw.ToUpper() + chromaSubsampling.Replace(":", "");
+
+                    var defaultRaw = MI.Get(StreamKind.Video, i, "Default").ToLower();
+                    string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     VideoInfos.Add(new VideoInfo(
                         format:        MI.Get(StreamKind.Video, i, "Format"),
                         formatProfile: MI.Get(StreamKind.Video, i, "Format_Profile"),
@@ -193,9 +221,13 @@ namespace MediainfoProjectNg
                         duration:      MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
                         height:        MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
                         width:         MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
-                        language:      MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
+                        language: string.IsNullOrWhiteSpace(MI.Get(StreamKind.Video, i, "Language/String3"))
+                                        ? "UND"
+                                        : MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
                         delay:         MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
-                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile"))
+                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile")),
+                        colorSpace:    colorSpace,
+                        isDefault:     isDefault
                     ));
 #if DEBUG
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
@@ -215,13 +247,27 @@ namespace MediainfoProjectNg
 
                 for (var i = 0; i < GeneralInfo.AudioCount; i++)
                 {
+                    var defaultRaw = MI.Get(StreamKind.Audio, i, "Default").ToLower();
+                    string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     AudioInfos.Add(new AudioInfo(
                         format:   MI.Get(StreamKind.Audio, i, "Format"),
                         bitDepth: MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsLong(),
                         bitrate:  MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsLong() / 1000,
                         duration: MI.Get(StreamKind.Audio, i, "Duration").TryParseAsLong(),
                         language: MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
-                        delay:    MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong()
+                        delay:    MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong(),
+                        isDefault:isDefault
+                    ));
+                }
+
+                for (var i = 0; i < GeneralInfo.TextCount; i++)
+                {
+                    var defaultRaw = MI.Get(StreamKind.Text, i, "Default").ToLower();
+                    string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
+                    SubInfos.Add(new SubInfo(
+                        format:   MI.Get(StreamKind.Text, i, "Format"),
+                        isDefault:isDefault,
+                        language:  MI.Get(StreamKind.Text, i, "Language/String3").ToUpper()
                     ));
                 }
 
@@ -231,10 +277,36 @@ namespace MediainfoProjectNg
                     var chapPosEnd = (int)MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong();
                     for (var i = chapPosBegin; i < chapPosEnd; i++)
                     {
+                        var name = MI.Get(StreamKind.Menu, 0, i, InfoKind.Text);
+                        string language = "";
+
+                        if (!string.IsNullOrWhiteSpace(name))
+                        {
+                            var idx = name.IndexOf(':');
+                            if (idx > 0)
+                            {
+                                language = name.Substring(0, idx).Trim();
+                                switch (language.ToLower())
+                                {
+                                    case "en":
+                                        language = "ENG";
+                                        break;
+                                    case "ja":
+                                        language = "JPN";
+                                        break;
+                                    case "zh":
+                                        language = "CHI";
+                                        break;
+                                    default:
+                                        language = language.ToUpper();
+                                        break;
+                                }
+                            }
+                        }
                         ChapterInfos.Add(new ChapterInfo(
                             timespan: MI.Get(StreamKind.Menu, 0, i, InfoKind.Name).TryParseAsMillisecond(),
-                            language: "",
-                            name:     MI.Get(StreamKind.Menu, 0, i, InfoKind.Text)
+                            language: language,
+                            name: name
                         ));
                     }
                 }

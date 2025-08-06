@@ -16,24 +16,31 @@
         <converter:InfoToBackgroundConverter x:Key="BackgroundConverter" />
         <converter:InfoToForegroundConverter x:Key="ForegroundConverter" />
         <converter:ChapterCountToStateConverter x:Key="ChapterCountToStateConverter" />
+        <converter:UnifiedLanguageConverter x:Key="UnifiedLanguageConverter" />
+        <converter:ColorSpaceToColorConverter x:Key="ColorSpaceToColorConverter" />
+        <converter:ChapterLanguageToColorConverter x:Key="ChapterLanguageToColorConverter" />
         <converter:FpsModeToTextConverter x:Key="FpsModeToTextConverter" />
         <converter:FpsToTextColorConverter x:Key="FpsToTextColorConverter" />
     </Window.Resources>
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem Width="600">
+                <StatusBarItem Width="350">
                     <TextBlock Text="{Binding StatusString}" />
                 </StatusBarItem>
-                <StatusBarItem>
+                <StatusBarItem Width="150">
                     <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
                 </StatusBarItem>
+                <StatusBarItem Width="150" HorizontalAlignment="Right">
+                    <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Click="ToggleRightPanelButton_Click"/>
+                </StatusBarItem>
             </StatusBar>
+            
             <Grid DataContext="{StaticResource FileInfos}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="200" />
                     <ColumnDefinition Width="2" />
-                    <ColumnDefinition Width="320" MinWidth="320" />
+                    <ColumnDefinition x:Name="RightPanelDef" Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
@@ -73,15 +80,49 @@
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
+                        <DataGridTextColumn Header="色彩格式" Binding="{Binding Path=VideoInfos[0].ColorSpace}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource ColorSpaceToColorConverter}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=VideoInfos[0].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=VideoInfos[0].Default}" />
                         <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[0].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[0].Default}" />
                         <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=AudioInfos[1].Format}" />
                         <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
                         <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[1].Bitrate}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[1].Default}" />
+                        <DataGridTextColumn Header="#1字幕" Binding="{Binding Path=SubInfos[0].Format}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=SubInfos[0].Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=SubInfos[0].Default}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.ChapterCount,Converter={StaticResource ChapterCountToStateConverter}}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding ChapterInfos, Converter={StaticResource UnifiedLanguageConverter}}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Background"
+                                                    Value="{Binding ChapterInfos, Converter={StaticResource ChapterLanguageToColorConverter}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="完整路径" Binding="{Binding Path=GeneralInfo.FullPath}" />
                     </DataGrid.Columns>
                     <DataGrid.RowStyle>
@@ -101,21 +142,13 @@
 
                 <!-- TODO: Fix the overflow problem when dragging the splitter -->
                 <!-- Microsoft to blame! -->
-                <Grid Grid.Column="2">
+                <Grid Grid.Column="2" x:Name="RightPanel">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="25" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Button x:Name="Button1" Grid.Row="0" HorizontalAlignment="Stretch"
-                                Content="Debug!" VerticalAlignment="Stretch" Margin="2" Click="Button1_Click" />
-                        <Button x:Name="Button2" Grid.Row="1" HorizontalAlignment="Stretch"
-                                Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="Button2_Click" />
-                    </Grid>
+                    <Button x:Name="ClearButton" Grid.Row="0" HorizontalAlignment="Stretch"
+                             Content="Clear!" VerticalAlignment="Stretch" Margin="2" Click="ClearButton_Click" />
                     <TextBox Grid.Row="1" HorizontalAlignment="Stretch"
                              VerticalAlignment="Stretch" Margin="2" VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Auto" IsReadOnly="True"

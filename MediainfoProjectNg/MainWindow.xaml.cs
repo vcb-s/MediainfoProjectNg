@@ -17,9 +17,11 @@ namespace MediainfoProjectNg
     {
         private readonly FileInfos _fileInfos;
         private readonly MainWindowViewModel _mainWindowViewModel;
+        private System.Windows.GridLength _rightPanelOriginalWidth;
         public MainWindow()
         {
             InitializeComponent();
+            _rightPanelOriginalWidth = RightPanelDef.Width;
             _fileInfos = (FileInfos) FindResource("FileInfos");
             _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
@@ -47,42 +49,31 @@ namespace MediainfoProjectNg
             {
                 MI?.Close();
             }
-#if DEBUG
-            Button1.IsEnabled = true;
-#else
-            Button1.IsEnabled = false;
-#endif
         }
 
-#pragma warning disable CS1998 // Disable await warning in non-debug build
-        private async void Button1_Click(object sender, RoutedEventArgs e)
-#pragma warning restore CS1998
-        {
-#if DEBUG
-            var fileList = new List<string>();
-            // Please use UTF8 encoding for the file
-            using (var sr = new StreamReader("Filelist.txt"))
-            {
-                while (!sr.EndOfStream)
-                {
-                    fileList.Add((await sr.ReadLineAsync())!);
-                }
-            }
-            
-            _mainWindowViewModel.StatusString = string.Empty;
-
-            var ret = await Utils.Load(fileList.ToArray());
-            _fileInfos.AddItems(ret.Item1);
-
-            _mainWindowViewModel.StatusString += $"Elapsed {ret.Item2}ms ";
-            _mainWindowViewModel.StatusString += $"Count: {fileList.Count}";
-#endif
-        }
-
-        private void Button2_Click(object sender, RoutedEventArgs e)
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             _fileInfos.Clear();
             _mainWindowViewModel.StatusString = "";
+        }
+
+        private void ToggleRightPanelButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (RightPanel.Visibility == Visibility.Visible)
+            {
+                RightPanel.Visibility = Visibility.Collapsed;
+                _rightPanelOriginalWidth = RightPanelDef.Width;
+                RightPanelDef.Width = new GridLength(0);
+                RightPanelDef.MinWidth = 0;
+                ToggleRightPanelButton.Content = "显示右侧面板";
+            }
+            else
+            {
+                RightPanel.Visibility = Visibility.Visible;
+                RightPanelDef.Width = _rightPanelOriginalWidth;
+                RightPanelDef.MinWidth = 320;
+                ToggleRightPanelButton.Content = "隐藏右侧面板";
+            }
         }
 
         private async void DataGrid1_OnDrop(object sender, DragEventArgs e)
