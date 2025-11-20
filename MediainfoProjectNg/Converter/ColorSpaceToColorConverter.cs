@@ -16,7 +16,7 @@ namespace MediainfoProjectNg.Converter
             switch (info.ColorSpace)
             {
                 case "YUV420":
-                    return Binding.DoNothing;
+                    return DependencyProperty.UnsetValue;
                 default:
                     return Brushes.Orange;
             }

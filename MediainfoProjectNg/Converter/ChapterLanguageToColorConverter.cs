@@ -24,7 +24,7 @@ namespace MediainfoProjectNg.Converter
 
             bool hasLanguageIssues = chapterLanguages.Count > 1 || (chapterLanguages.Count == 1 && chapterLanguages[0] == "");
 
-            return hasLanguageIssues ? Brushes.Yellow : Binding.DoNothing;
+            return hasLanguageIssues ? Brushes.Yellow : DependencyProperty.UnsetValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
