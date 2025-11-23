@@ -17,7 +17,7 @@ namespace MediainfoProjectNg.Converter
             switch (info.Fps)
             {
                 case "23.976 (24000/1001)":
-                    return Binding.DoNothing;
+                    return DependencyProperty.UnsetValue;
                 case "29.970 (30000/1001)":
                 case "59.940 (60000/1001)":
                     return Brushes.Olive;
