@@ -9,20 +9,14 @@
     <Authors>Mark Wu</Authors>
     <NeutralLanguage>zh-Hans</NeutralLanguage>
     <PublishSingleFile>true</PublishSingleFile>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties/AssemblyInfo*.cs" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.7.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell -ExecutionPolicy ByPass -File &quot;$(ProjectDir)/../Scripts/InjectGitVersion.ps1&quot; &quot;$(ProjectDir)/&quot;" />
-    <ItemGroup>
-      <Compile Include="Properties/AssemblyInfo.cs" />
-    </ItemGroup>
-  </Target>
 
 </Project>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,7 +27,7 @@ namespace MediainfoProjectNg
             _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
 
-            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var v = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
             _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
 
             MediaInfo? MI = null;
