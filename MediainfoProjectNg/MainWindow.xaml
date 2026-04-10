@@ -43,7 +43,7 @@
                     <ColumnDefinition x:Name="RightPanelDef" Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
 
-                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
+                <GridSplitter x:Name="PanelSplitter" Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
                 <DataGrid x:Name="DataGrid1" Grid.Column="0"
                           HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"

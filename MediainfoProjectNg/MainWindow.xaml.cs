@@ -64,6 +64,7 @@ namespace MediainfoProjectNg
                 _rightPanelOriginalWidth = RightPanelDef.Width;
                 RightPanelDef.Width = new GridLength(0);
                 RightPanelDef.MinWidth = 0;
+                PanelSplitter.Visibility = Visibility.Collapsed;
                 ToggleRightPanelButton.Content = "显示右侧面板";
             }
             else
@@ -71,6 +72,7 @@ namespace MediainfoProjectNg
                 RightPanel.Visibility = Visibility.Visible;
                 RightPanelDef.Width = _rightPanelOriginalWidth;
                 RightPanelDef.MinWidth = 320;
+                PanelSplitter.Visibility = Visibility.Visible;
                 ToggleRightPanelButton.Content = "隐藏右侧面板";
             }
         }
