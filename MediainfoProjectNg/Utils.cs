@@ -213,6 +213,15 @@ namespace MediainfoProjectNg
                 ));
             }
 
+            if (info.VideoInfos.Any(o => o.Language != "UND"))
+            {
+                ret.Add(new ErrorInfo(
+                    level: ErrorLevel.Error,
+                    description: "视频轨道语言非 UND。",
+                    brush: Brushes.Orange
+                ));
+            }
+
             var duration = new List<long>();
             duration.AddRange(info.VideoInfos.Select(videoInfo => videoInfo.Duration));
             duration.AddRange(info.AudioInfos.Select(audioInfo => audioInfo.Duration));
