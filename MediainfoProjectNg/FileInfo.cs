@@ -1,9 +1,7 @@
-using System;
+using MediaInfoLib;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Media;
-using MediaInfoLib;
 
 namespace MediainfoProjectNg
 {
@@ -160,7 +158,7 @@ namespace MediainfoProjectNg
         public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
         public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
         public List<SubInfo> SubInfos { get; } = new List<SubInfo>();
-//        public List<ErrorInfo> ErrorInfos { get; set; } = null;
+        //        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
 
         public FileInfo(string url)
@@ -179,13 +177,13 @@ namespace MediainfoProjectNg
                 Summary = MI.Inform();
 
                 GeneralInfo = new GeneralInfo(
-                    filename:     Path.GetFileNameWithoutExtension(url),
-                    fullPath:     url,
-                    format:       MI.Get(StreamKind.General, 0, "Format"),
-                    bitrate:      MI.Get(StreamKind.General, 0, "OverallBitRate").TryParseAsLong() / 1000,
-                    videoCount:   MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsLong(),
-                    audioCount:   MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsLong(),
-                    textCount:    MI.Get(StreamKind.General, 0, "TextCount").TryParseAsLong(),
+                    filename: Path.GetFileNameWithoutExtension(url),
+                    fullPath: url,
+                    format: MI.Get(StreamKind.General, 0, "Format"),
+                    bitrate: MI.Get(StreamKind.General, 0, "OverallBitRate").TryParseAsLong() / 1000,
+                    videoCount: MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsLong(),
+                    audioCount: MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsLong(),
+                    textCount: MI.Get(StreamKind.General, 0, "TextCount").TryParseAsLong(),
                     chapterCount: -1
                 );
 
@@ -212,22 +210,22 @@ namespace MediainfoProjectNg
                     var defaultRaw = MI.Get(StreamKind.Video, i, "Default").ToLower();
                     string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     VideoInfos.Add(new VideoInfo(
-                        format:        MI.Get(StreamKind.Video, i, "Format"),
+                        format: MI.Get(StreamKind.Video, i, "Format"),
                         formatProfile: MI.Get(StreamKind.Video, i, "Format_Profile"),
-                        fpsMode:       MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
-                        fps:           MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
-                        bitrate:       MI.Get(StreamKind.Video, i, "BitRate").TryParseAsLong() / 1000,
-                        bitDepth:      MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsLong(),
-                        duration:      MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
-                        height:        MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
-                        width:         MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
+                        fpsMode: MI.Get(StreamKind.Video, i, "FrameRate_Mode"),
+                        fps: MI.Get(StreamKind.Video, i, "FrameRate/String").Replace(" FPS", ""),
+                        bitrate: MI.Get(StreamKind.Video, i, "BitRate").TryParseAsLong() / 1000,
+                        bitDepth: MI.Get(StreamKind.Video, i, "BitDepth").TryParseAsLong(),
+                        duration: MI.Get(StreamKind.Video, i, "Duration").TryParseAsLong(),
+                        height: MI.Get(StreamKind.Video, i, "Height").TryParseAsLong(),
+                        width: MI.Get(StreamKind.Video, i, "Width").TryParseAsLong(),
                         language: string.IsNullOrWhiteSpace(MI.Get(StreamKind.Video, i, "Language/String3"))
                                         ? "UND"
                                         : MI.Get(StreamKind.Video, i, "Language/String3").ToUpper(),
-                        delay:         MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
-                        profile:       new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile")),
-                        colorSpace:    colorSpace,
-                        isDefault:     isDefault
+                        delay: MI.Get(StreamKind.Video, i, "Delay").TryParseAsLong(),
+                        profile: new ProfileInfo(MI.Get(StreamKind.Video, i, "Format_Profile")),
+                        colorSpace: colorSpace,
+                        isDefault: isDefault
                     ));
 #if DEBUG
                     Debug.WriteLine(MI.Get(StreamKind.Video, i, "Stored_Width"));
@@ -250,13 +248,13 @@ namespace MediainfoProjectNg
                     var defaultRaw = MI.Get(StreamKind.Audio, i, "Default").ToLower();
                     string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     AudioInfos.Add(new AudioInfo(
-                        format:   MI.Get(StreamKind.Audio, i, "Format"),
+                        format: MI.Get(StreamKind.Audio, i, "Format"),
                         bitDepth: MI.Get(StreamKind.Audio, i, "BitDepth").TryParseAsLong(),
-                        bitrate:  MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsLong() / 1000,
+                        bitrate: MI.Get(StreamKind.Audio, i, "BitRate").TryParseAsLong() / 1000,
                         duration: MI.Get(StreamKind.Audio, i, "Duration").TryParseAsLong(),
                         language: MI.Get(StreamKind.Audio, i, "Language/String3").ToUpper(),
-                        delay:    MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong(),
-                        isDefault:isDefault
+                        delay: MI.Get(StreamKind.Audio, i, "Delay").TryParseAsLong(),
+                        isDefault: isDefault
                     ));
                 }
 
@@ -265,9 +263,9 @@ namespace MediainfoProjectNg
                     var defaultRaw = MI.Get(StreamKind.Text, i, "Default").ToLower();
                     string isDefault = (defaultRaw == "yes" || defaultRaw == "1") ? "Yes" : "No";
                     SubInfos.Add(new SubInfo(
-                        format:   MI.Get(StreamKind.Text, i, "Format"),
-                        isDefault:isDefault,
-                        language:  MI.Get(StreamKind.Text, i, "Language/String3").ToUpper()
+                        format: MI.Get(StreamKind.Text, i, "Format"),
+                        isDefault: isDefault,
+                        language: MI.Get(StreamKind.Text, i, "Language/String3").ToUpper()
                     ));
                 }
 

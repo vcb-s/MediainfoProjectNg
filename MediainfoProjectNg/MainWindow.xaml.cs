@@ -1,13 +1,11 @@
-using System.Collections.Generic;
+using MediaInfoLib;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MediaInfoLib;
 
 namespace MediainfoProjectNg
 {
@@ -23,8 +21,8 @@ namespace MediainfoProjectNg
         {
             InitializeComponent();
             _rightPanelOriginalWidth = RightPanelDef.Width;
-            _fileInfos = (FileInfos) FindResource("FileInfos");
-            _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
+            _fileInfos = (FileInfos)FindResource("FileInfos");
+            _mainWindowViewModel = (MainWindowViewModel)FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
 
             var v = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
@@ -114,8 +112,8 @@ namespace MediainfoProjectNg
         private void DataGridRow_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is DataGridRow)) return;
-            var row = (DataGridRow) sender;
-            var q = (FileInfo) row.Item;
+            var row = (DataGridRow)sender;
+            var q = (FileInfo)row.Item;
             var win = new TechnicalWindow(q);
             win.Show();
         }

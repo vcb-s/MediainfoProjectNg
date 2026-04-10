@@ -80,11 +80,11 @@ namespace MediainfoProjectNg
                     default:
                         if (prop.Name == "Summary" && value is string sum)
                         {
-                            d.Children.Add(new KeyChildren(prop.Name) {Children = {new KeyValue("", sum)}});
+                            d.Children.Add(new KeyChildren(prop.Name) { Children = { new KeyValue("", sum) } });
                         }
                         else if ((prop.Name == "Duration" || prop.Name == "Timespan") && value is int ms)
                         {
-                            var ticks = (long) ms * 10000;
+                            var ticks = (long)ms * 10000;
                             var ts = new TimeSpan(ticks);
                             d.Children.Add(new KeyValue(prop.Name, ts.ToString(@"hh\:mm\:ss\.fff")));
                         }
@@ -102,14 +102,14 @@ namespace MediainfoProjectNg
 
         private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = (MenuItem) e.OriginalSource;
-            Clipboard.SetText(((KeyValue) s.DataContext).Value);
+            var s = (MenuItem)e.OriginalSource;
+            Clipboard.SetText(((KeyValue)s.DataContext).Value);
         }
 
         private void MenuItemKeyValuePairCopy_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = (MenuItem) e.OriginalSource;
-            var keyValue = (KeyValue) s.DataContext;
+            var s = (MenuItem)e.OriginalSource;
+            var keyValue = (KeyValue)s.DataContext;
             Clipboard.SetText($"{keyValue.Key}: {keyValue.Value}");
         }
     }
