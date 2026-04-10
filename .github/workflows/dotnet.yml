@@ -4,29 +4,29 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: windows-latest
     strategy:
       matrix:
-        dotnet-version: [ '6.0.x' ]
-        runtime-identifier: [ 'win-x64' ]
+        dotnet-version: ["10.0.x"]
+        runtime-identifier: ["win-x64"]
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Setup .NET SDK ${{ matrix.dotnet-version }}
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: ${{ matrix.dotnet-version }}
-    - name: Install dependencies
-      run: dotnet restore --runtime ${{ matrix.runtime-identifier }}
-    - name: Build with dotnet
-      run: dotnet build MediainfoProjectNg --configuration Release --no-restore --runtime ${{ matrix.runtime-identifier }} --self-contained false
-    - name: Publish with dotnet
-      run: dotnet publish MediainfoProjectNg --configuration Release --no-build --runtime ${{ matrix.runtime-identifier }} --self-contained false
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: 'MediainfoProjectNg'
-        path: MediainfoProjectNg\bin\Release\net6.0-windows\win-x64\publish\**
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup .NET SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore --runtime ${{ matrix.runtime-identifier }}
+      - name: Build with dotnet
+        run: dotnet build MediainfoProjectNg --configuration Release --no-restore --runtime ${{ matrix.runtime-identifier }}
+      - name: Publish with dotnet
+        run: dotnet publish MediainfoProjectNg --configuration Release --no-build --runtime ${{ matrix.runtime-identifier }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: "MediainfoProjectNg"
+          path: |
+            MediainfoProjectNg\bin\Release\net10.0-windows\win-x64\publish\MediainfoProjectNg.exe
