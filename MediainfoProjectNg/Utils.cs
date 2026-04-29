@@ -105,7 +105,7 @@ namespace MediainfoProjectNg
                     @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
             var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
-            var profile = GenerateProfileString(info.VideoInfos[0].Profile);
+            var profile = GenerateProfileString(info.VideoInfos[0].Profile, info.VideoInfos[0].Format, info.VideoInfos[0].BitDepth, info.VideoInfos[0].ColorSpace);
             if (profile == "") return true;
             var vencoder = GenerateVencoderString(info.VideoInfos[0]);
             if (vencoder == "") return true;
@@ -127,19 +127,27 @@ namespace MediainfoProjectNg
             }
         }
 
-        private static string GenerateProfileString(ProfileInfo info)
+        private static string GenerateProfileString(ProfileInfo info, string format, long bitDepth, string colorSpace)
         {
-            switch (info.Profile)
+            if (bitDepth != 10)
             {
-                case "Main 10":
-                    return "Ma10p";
-                case "High 10":
-                    return "Hi10p";
-                case "High 4:4:4 Predictive":
-                    return "Hi444pp";
-                default:
-                    return "";
+                return "";
             }
+
+            return (format, info.Profile, colorSpace) switch
+            {
+                ("HEVC", "Main 10", "YUV420") => "Ma10p",
+                ("HEVC", "Format Range", "YUV444") => "Ma444-10p",
+
+                ("AVC", "High 4:4:4 Predictive", "YUV420") => "Hi444pp",
+                ("AVC", "High 10", "YUV420") => "Hi10p",
+
+                ("AV1", "Main", "YUV420") => "Ma10p",
+                ("AV1", "High", "YUV420") => "Hi10p",
+                ("AV1", "Professional", "YUV420") => "Pro10p",
+
+                _ => ""
+            };
         }
 
         // TODO: Proper resolution calculation
@@ -160,6 +168,8 @@ namespace MediainfoProjectNg
                     return "x265";
                 case "AVC":
                     return "x264";
+                case "AV1":
+                    return "svtav1";
                 default:
                     return "";
             }
