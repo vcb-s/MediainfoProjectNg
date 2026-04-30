@@ -102,11 +102,11 @@ namespace MediainfoProjectNg
         {
             var filenameReg =
                 new Regex(
-                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
+                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?:(?<profile>.*?)_)?(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
             var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
             var profile = GenerateProfileString(info.VideoInfos[0].Profile, info.VideoInfos[0].Format, info.VideoInfos[0].BitDepth, info.VideoInfos[0].ColorSpace);
-            if (profile == "") return true;
+            if (match.Groups["profile"].Value != "" && profile == "") return true;
             var vencoder = GenerateVencoderString(info.VideoInfos[0]);
             if (vencoder == "") return true;
             return match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
