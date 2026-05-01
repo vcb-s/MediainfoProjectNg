@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -43,6 +44,11 @@ namespace MediainfoProjectNg
             var d = new KeyChildren(name);
             foreach (var prop in props)
             {
+                if (Attribute.GetCustomAttribute(prop, typeof(BrowsableAttribute)) is BrowsableAttribute { Browsable: false })
+                {
+                    continue;
+                }
+
                 var value = prop.GetValue(o);
 
                 switch (value)

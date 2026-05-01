@@ -1,5 +1,6 @@
 using MediaInfoLib;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Media;
@@ -56,6 +57,7 @@ namespace MediainfoProjectNg
         public ProfileInfo Profile { get; set; } = profile;
         public string ColorSpace { get; set; } = colorSpace;
         public string Default { get; set; } = isDefault;
+        public string Resolution => $"{Width}x{Height}";
     }
 
     public class AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay, string isDefault)
@@ -99,6 +101,20 @@ namespace MediainfoProjectNg
         public List<SubInfo> SubInfos { get; } = [];
         //        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
+        [Browsable(false)]
+        public VideoInfo? Video0 => GetAtOrDefault(VideoInfos, 0);
+        [Browsable(false)]
+        public AudioInfo? Audio0 => GetAtOrDefault(AudioInfos, 0);
+        [Browsable(false)]
+        public AudioInfo? Audio1 => GetAtOrDefault(AudioInfos, 1);
+        [Browsable(false)]
+        public SubInfo? Sub0 => GetAtOrDefault(SubInfos, 0);
+
+        private static T? GetAtOrDefault<T>(IReadOnlyList<T> source, int index)
+            where T : class
+        {
+            return index < source.Count ? source[index] : null;
+        }
 
         public FileInfo(string url)
         {

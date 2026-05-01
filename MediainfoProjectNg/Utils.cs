@@ -104,9 +104,10 @@ namespace MediainfoProjectNg
                     @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
             var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
-            var profile = GenerateProfileString(info.VideoInfos[0].Profile);
+            if (info.Video0 is not { } videoInfo) return true;
+            var profile = GenerateProfileString(videoInfo.Profile);
             if (profile == "") return true;
-            var vencoder = GenerateVencoderString(info.VideoInfos[0]);
+            var vencoder = GenerateVencoderString(videoInfo);
             if (vencoder == "") return true;
             return match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
                                                             && match.Groups["aencoders"].Value ==
