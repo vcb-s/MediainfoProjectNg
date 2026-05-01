@@ -16,7 +16,7 @@ namespace MediainfoProjectNg
     {
         private readonly FileInfos _fileInfos;
         private readonly MainWindowViewModel _mainWindowViewModel;
-        private System.Windows.GridLength _rightPanelOriginalWidth;
+        private GridLength _rightPanelOriginalWidth;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,8 +40,8 @@ namespace MediainfoProjectNg
                 }
                 else
                 {
-                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version.Substring(15)}]";
-                    _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
+                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version[15..]}]";
+                    _mainWindowViewModel.StatusString = $"Mediainfo DLL {version[15..]} at your service.";
                 }
             }
             finally
@@ -80,7 +80,7 @@ namespace MediainfoProjectNg
         private async void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
             _mainWindowViewModel.StatusString = string.Empty;
-            if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
+            if (e.Data.GetData(DataFormats.FileDrop) is not string[] urls) return;
             var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
             var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
             _fileInfos.AddItems(ret.info);
@@ -113,7 +113,7 @@ namespace MediainfoProjectNg
 
         private void DataGridRow_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!(sender is DataGridRow)) return;
+            if (sender is not DataGridRow) return;
             var row = (DataGridRow)sender;
             var q = (FileInfo)row.Item;
             var win = new TechnicalWindow(q);

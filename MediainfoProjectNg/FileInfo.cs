@@ -27,138 +27,76 @@ namespace MediainfoProjectNg
         }
     }
 
-    public class GeneralInfo
+    public class GeneralInfo(string filename, string fullPath, string format, long bitrate, long videoCount, long audioCount, long textCount, long chapterCount)
     {
-        public string Filename { get; set; }
-        public string FullPath { get; set; }
-        public string Format { get; set; }
-        public long Bitrate { get; set; }
-        public long VideoCount { get; set; }
-        public long AudioCount { get; set; }
-        public long TextCount { get; set; }
-        public long ChapterCount { get; set; }
-
-        public GeneralInfo(string filename, string fullPath, string format, long bitrate, long videoCount, long audioCount, long textCount, long chapterCount)
-        {
-            Filename = filename;
-            FullPath = fullPath;
-            Format = format;
-            Bitrate = bitrate;
-            VideoCount = videoCount;
-            AudioCount = audioCount;
-            TextCount = textCount;
-            ChapterCount = chapterCount;
-        }
+        public string Filename { get; set; } = filename;
+        public string FullPath { get; set; } = fullPath;
+        public string Format { get; set; } = format;
+        public long Bitrate { get; set; } = bitrate;
+        public long VideoCount { get; set; } = videoCount;
+        public long AudioCount { get; set; } = audioCount;
+        public long TextCount { get; set; } = textCount;
+        public long ChapterCount { get; set; } = chapterCount;
     }
 
     // TODO: Using actual type instead of string
-    public class VideoInfo
+    public class VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile, string colorSpace, string isDefault)
     {
-        public string Format { get; set; }
-        public string FormatProfile { get; set; }
-        public string FpsMode { get; set; }
-        public string Fps { get; set; }
-        public long Bitrate { get; set; }
-        public long BitDepth { get; set; }
-        public long Duration { get; set; }
-        public long Height { get; set; }
-        public long Width { get; set; }
-        public string Language { get; set; }
-        public long Delay { get; set; }
-        public ProfileInfo Profile { get; set; }
-        public string ColorSpace { get; set; }
-        public string Default { get; set; }
-
-        public VideoInfo(string format, string formatProfile, string fpsMode, string fps, long bitrate, long bitDepth, long duration, long height, long width, string language, long delay, ProfileInfo profile, string colorSpace, string isDefault)
-        {
-            Format = format;
-            FormatProfile = formatProfile;
-            FpsMode = fpsMode;
-            Fps = fps;
-            Bitrate = bitrate;
-            BitDepth = bitDepth;
-            Duration = duration;
-            Height = height;
-            Width = width;
-            Language = language;
-            Delay = delay;
-            Profile = profile;
-            ColorSpace = colorSpace;
-            Default = isDefault;
-        }
+        public string Format { get; set; } = format;
+        public string FormatProfile { get; set; } = formatProfile;
+        public string FpsMode { get; set; } = fpsMode;
+        public string Fps { get; set; } = fps;
+        public long Bitrate { get; set; } = bitrate;
+        public long BitDepth { get; set; } = bitDepth;
+        public long Duration { get; set; } = duration;
+        public long Height { get; set; } = height;
+        public long Width { get; set; } = width;
+        public string Language { get; set; } = language;
+        public long Delay { get; set; } = delay;
+        public ProfileInfo Profile { get; set; } = profile;
+        public string ColorSpace { get; set; } = colorSpace;
+        public string Default { get; set; } = isDefault;
     }
 
-    public class AudioInfo
+    public class AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay, string isDefault)
     {
-        public string Format { get; set; }
-        public long BitDepth { get; set; }
-        public long Bitrate { get; set; }
-        public long Duration { get; set; }
-        public string Language { get; set; }
-        public long Delay { get; set; }
-        public string Default { get; set; }
-
-        public AudioInfo(string format, long bitDepth, long bitrate, long duration, string language, long delay, string isDefault)
-        {
-            Format = format;
-            BitDepth = bitDepth;
-            Bitrate = bitrate;
-            Duration = duration;
-            Language = language;
-            Delay = delay;
-            Default = isDefault;
-        }
+        public string Format { get; set; } = format;
+        public long BitDepth { get; set; } = bitDepth;
+        public long Bitrate { get; set; } = bitrate;
+        public long Duration { get; set; } = duration;
+        public string Language { get; set; } = language;
+        public long Delay { get; set; } = delay;
+        public string Default { get; set; } = isDefault;
     }
 
-    public class ChapterInfo
+    public class ChapterInfo(int timespan, string name, string language)
     {
-        public int Timespan { get; set; }
-        public string Name { get; set; }
-        public string Language { get; set; }
-
-        public ChapterInfo(int timespan, string name, string language)
-        {
-            Timespan = timespan;
-            Name = name;
-            Language = language;
-        }
+        public int Timespan { get; set; } = timespan;
+        public string Name { get; set; } = name;
+        public string Language { get; set; } = language;
     }
 
-    public class SubInfo
+    public class SubInfo(string format, string isDefault, string language)
     {
-        public string Format { get; set; }
-        public string Default { get; set; }
-        public string Language { get; set; }
-
-        public SubInfo(string format, string isDefault, string language)
-        {
-            Format = format;
-            Default = isDefault;
-            Language = language;
-        }
+        public string Format { get; set; } = format;
+        public string Default { get; set; } = isDefault;
+        public string Language { get; set; } = language;
     }
 
-    public class ErrorInfo
+    public class ErrorInfo(ErrorLevel level, string description, Brush brush)
     {
-        public ErrorLevel Level { get; set; }
-        public string Description { get; set; }
-        public Brush Brush { get; set; }
-
-        public ErrorInfo(ErrorLevel level, string description, Brush brush)
-        {
-            Level = level;
-            Description = description;
-            Brush = brush;
-        }
+        public ErrorLevel Level { get; set; } = level;
+        public string Description { get; set; } = description;
+        public Brush Brush { get; set; } = brush;
     }
 
     public class FileInfo
     {
         public GeneralInfo GeneralInfo { get; }
-        public List<VideoInfo> VideoInfos { get; } = new List<VideoInfo>();
-        public List<AudioInfo> AudioInfos { get; } = new List<AudioInfo>();
-        public List<ChapterInfo> ChapterInfos { get; } = new List<ChapterInfo>();
-        public List<SubInfo> SubInfos { get; } = new List<SubInfo>();
+        public List<VideoInfo> VideoInfos { get; } = [];
+        public List<AudioInfo> AudioInfos { get; } = [];
+        public List<ChapterInfo> ChapterInfos { get; } = [];
+        public List<SubInfo> SubInfos { get; } = [];
         //        public List<ErrorInfo> ErrorInfos { get; set; } = null;
         public string Summary { get; }
 
@@ -284,22 +222,14 @@ namespace MediainfoProjectNg
                             var idx = name.IndexOf(':');
                             if (idx > 0)
                             {
-                                language = name.Substring(0, idx).Trim();
-                                switch (language.ToLower())
+                                language = name[..idx].Trim();
+                                language = language.ToLower() switch
                                 {
-                                    case "en":
-                                        language = "ENG";
-                                        break;
-                                    case "ja":
-                                        language = "JPN";
-                                        break;
-                                    case "zh":
-                                        language = "CHI";
-                                        break;
-                                    default:
-                                        language = language.ToUpper();
-                                        break;
-                                }
+                                    "en" => "ENG",
+                                    "ja" => "JPN",
+                                    "zh" => "CHI",
+                                    _ => language.ToUpper(),
+                                };
                             }
                         }
                         ChapterInfos.Add(new ChapterInfo(

@@ -12,21 +12,21 @@ namespace MediainfoProjectNg
     static class Utils
     {
         // TODO: Determine what should be excluded
-        private static readonly List<string> ExcludeDirs = new List<string>
-        {
+        private static readonly List<string> ExcludeDirs =
+        [
             "CDs",
             "Scans"
-        };
+        ];
 
-        private static readonly List<string> ExcludeExts = new List<string>
-        {
+        private static readonly List<string> ExcludeExts =
+        [
             ".txt",
             ".log",
             ".torrent"
-        };
+        ];
 
-        private static readonly string[] Matroska = { ".mkv", ".mka", ".mks" };
-        private static readonly string[] MPEG_4 = { ".mp4", ".m4a", ".m4v" };
+        private static readonly string[] Matroska = [".mkv", ".mka", ".mks"];
+        private static readonly string[] MPEG_4 = [".mp4", ".m4a", ".m4v"];
 
         public static IEnumerable<string> EnumerateFolder(string folderPath)
         {

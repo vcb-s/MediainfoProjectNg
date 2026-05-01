@@ -6,27 +6,17 @@ using System.Windows.Controls;
 
 namespace MediainfoProjectNg
 {
-    class KeyValue
+    public class KeyValue(string key, string value)
     {
-        public string Key { get; }
-        public string Value { get; }
-
-        public KeyValue(string key, string value)
-        {
-            Key = key;
-            Value = value;
-        }
+        public string Key { get; } = key;
+        public string Value { get; } = value;
     }
 
-    class KeyChildren
-    {
-        public string Key { get; }
-        public List<object> Children { get; } = new List<object>();
 
-        public KeyChildren(string key)
-        {
-            Key = key;
-        }
+    class KeyChildren(string key)
+    {
+        public string Key { get; } = key;
+        public List<object> Children { get; } = [];
     }
 
     /// <summary>
@@ -57,11 +47,11 @@ namespace MediainfoProjectNg
 
                 switch (value)
                 {
-                    case GeneralInfo _:
-                    case FileInfo _:
-                    case AudioInfo _:
-                    case ChapterInfo _:
-                    case ProfileInfo _:
+                    case GeneralInfo:
+                    case FileInfo:
+                    case AudioInfo:
+                    case ChapterInfo:
+                    case ProfileInfo:
                         d.Children.Add(GetTreeStructure(prop.Name, value));
                         break;
                     case IList list:
