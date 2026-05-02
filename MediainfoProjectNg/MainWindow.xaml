@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediainfoProjectNg"
-        xmlns:converter="clr-namespace:MediainfoProjectNg.Converter"
+        xmlns:converter="clr-namespace:MediainfoProjectNg.Converter" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="{Binding Path=TitleString, Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
         ResizeMode="CanResizeWithGrip"
@@ -31,8 +31,11 @@
                 <StatusBarItem Width="150">
                     <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
                 </StatusBarItem>
-                <StatusBarItem Width="150" HorizontalAlignment="Right">
-                    <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Click="ToggleRightPanelButton_Click"/>
+                <StatusBarItem Width="220" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="CaptureWindowButton" Content="截图" Width="60" Click="CaptureWindowButton_Click" />
+                        <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Margin="6,0,0,0" Click="ToggleRightPanelButton_Click"/>
+                    </StackPanel>
                 </StatusBarItem>
             </StatusBar>
             

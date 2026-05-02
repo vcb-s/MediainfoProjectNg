@@ -1,4 +1,6 @@
 using MediaInfoLib;
+using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -17,6 +19,8 @@ namespace MediainfoProjectNg
         private readonly FileInfos _fileInfos;
         private readonly MainWindowViewModel _mainWindowViewModel;
         private GridLength _rightPanelOriginalWidth;
+        private readonly string _mediaInfoStatusString = string.Empty;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,13 +39,15 @@ namespace MediainfoProjectNg
                 var version = MI.Option("Info_Version");
                 if (version == "Unable to load MediaInfo library")
                 {
-                    _mainWindowViewModel.TitleString += " [Mediainfo: Unavailable]";
-                    MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _mediaInfoStatusString = "MediainfoLib unavailable.";
+                    _mainWindowViewModel.TitleString += $" [{_mediaInfoStatusString}]";
+                    MessageBox.Show("无法载入适用的 MediainfoLib，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version[15..]}]";
-                    _mainWindowViewModel.StatusString = $"Mediainfo DLL {version[15..]} at your service.";
+                    _mediaInfoStatusString = $"MediainfoLib {version[15..]}";
+                    _mainWindowViewModel.TitleString += $" [{_mediaInfoStatusString}]";
+                    _mainWindowViewModel.StatusString = _mediaInfoStatusString;
                 }
             }
             finally
@@ -74,6 +80,47 @@ namespace MediainfoProjectNg
                 RightPanelDef.MinWidth = 320;
                 PanelSplitter.Visibility = Visibility.Visible;
                 ToggleRightPanelButton.Content = "隐藏右侧面板";
+            }
+        }
+
+        private async void CaptureWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_fileInfos.Count == 0)
+            {
+                MessageBox.Show("列表中没有可截图的文件。", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = ".png",
+                FileName = $"MPNG-{DateTime.Now:yyyyMMdd-HHmmss}.png",
+                Filter = "PNG 图片 (*.png)|*.png",
+                Title = "保存窗口截图"
+            };
+
+            if (dialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            CaptureWindowButton.IsEnabled = false;
+            _mainWindowViewModel.StatusString = "正在生成截图...";
+
+            try
+            {
+                await SaveFullRowsScreenshotAsync(dialog.FileName);
+                _mainWindowViewModel.StatusString = $"截图已保存: {dialog.FileName}";
+            }
+            catch (Exception ex)
+            {
+                _mainWindowViewModel.StatusString = "截图失败";
+                MessageBox.Show($"截图失败：{ex.Message}", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                CaptureWindowButton.IsEnabled = true;
             }
         }
 
