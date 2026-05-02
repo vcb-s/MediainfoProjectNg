@@ -20,6 +20,7 @@ namespace MediainfoProjectNg
         private readonly MainWindowViewModel _mainWindowViewModel;
         private GridLength _rightPanelOriginalWidth;
         private readonly string _mediaInfoStatusString = string.Empty;
+        private readonly string _titleString = string.Empty;
 
         public MainWindow()
         {
@@ -30,7 +31,8 @@ namespace MediainfoProjectNg
             DataContext = _mainWindowViewModel;
 
             var v = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-            _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
+            _titleString = $"mediainfo project ng {v}";
+            _mainWindowViewModel.TitleString = _titleString;
 
             MediaInfo? MI = null;
             try

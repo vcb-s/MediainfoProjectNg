@@ -84,7 +84,7 @@ namespace MediainfoProjectNg
                     },
                     Children =
                     {
-                        BuildStatusBarText(_mediaInfoStatusString, 0),
+                        BuildStatusBarText($"{_mediaInfoStatusString} @ {_titleString}", 0),
                         BuildStatusBarText($"列表中共有 {_fileInfos.Count} 个文件", 2)
                     }
                 },
