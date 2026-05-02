@@ -68,19 +68,18 @@ namespace MediainfoProjectNg
             {
                 RightPanel.Visibility = Visibility.Collapsed;
                 _rightPanelOriginalWidth = RightPanelDef.Width;
-                RightPanelDef.Width = new GridLength(0);
                 RightPanelDef.MinWidth = 0;
-                PanelSplitter.Visibility = Visibility.Collapsed;
+                RightPanelDef.Width = new GridLength(0);
                 ToggleRightPanelButton.Content = "显示右侧面板";
             }
             else
             {
                 RightPanel.Visibility = Visibility.Visible;
-                RightPanelDef.Width = _rightPanelOriginalWidth;
                 RightPanelDef.MinWidth = 320;
-                PanelSplitter.Visibility = Visibility.Visible;
+                RightPanelDef.Width = _rightPanelOriginalWidth;
                 ToggleRightPanelButton.Content = "隐藏右侧面板";
             }
+            PanelSplitter.Visibility = RightPanel.Visibility;
         }
 
         private async void CaptureWindowButton_Click(object sender, RoutedEventArgs e)
