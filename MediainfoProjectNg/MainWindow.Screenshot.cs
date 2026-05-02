@@ -16,6 +16,10 @@ namespace MediainfoProjectNg
     {
         private const int MaxBitmapDimension = 32767;
         private const double MaxMeasureWidth = 20000;
+        private const double StatusBarMinWidth = 500;
+        private const double StatusBarRightPadding = 4;
+        private const double DefaultColumnWidth = 80;
+        private const double DataGridWidthPadding = 4;
 
         private async Task SaveFullRowsScreenshotAsync(string filePath)
         {
@@ -24,47 +28,43 @@ namespace MediainfoProjectNg
                 throw new InvalidOperationException("无法找到窗口内容。");
             }
 
-            var originalRootSize = new Size(root.ActualWidth, root.ActualHeight);
-            if (originalRootSize.Width <= 0 || originalRootSize.Height <= 0)
+            if (root.ActualWidth <= 0 || root.ActualHeight <= 0)
             {
                 throw new InvalidOperationException("窗口尚未完成布局，无法截图。");
             }
 
             var (screenshotSurface, screenshotDataGrid) = BuildScreenshotSurface();
-            screenshotSurface.Measure(new Size(MaxMeasureWidth, double.PositiveInfinity));
-            screenshotSurface.Arrange(new Rect(0, 0, MaxMeasureWidth, screenshotSurface.DesiredSize.Height));
-            screenshotSurface.UpdateLayout();
-            await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
+            await UpdateScreenshotLayoutAsync(screenshotSurface, MaxMeasureWidth);
 
             var screenshotWidth = Math.Ceiling(GetScreenshotSurfaceWidth(screenshotDataGrid));
             screenshotSurface.Width = screenshotWidth;
             screenshotDataGrid.Width = Math.Ceiling(GetDataGridContentWidth(screenshotDataGrid));
-            screenshotSurface.Measure(new Size(screenshotWidth, double.PositiveInfinity));
+            await UpdateScreenshotLayoutAsync(screenshotSurface, screenshotWidth);
 
-            var captureSize = new Size(
-                screenshotWidth,
-                Math.Ceiling(screenshotSurface.DesiredSize.Height));
-
-            screenshotSurface.Arrange(new Rect(captureSize));
-            screenshotSurface.UpdateLayout();
-            await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
-
+            var captureSize = new Size(screenshotWidth, Math.Ceiling(screenshotSurface.DesiredSize.Height));
             SaveVisualAsPng(screenshotSurface, captureSize, filePath);
+        }
+
+        private async Task UpdateScreenshotLayoutAsync(FrameworkElement surface, double width)
+        {
+            surface.Measure(new Size(width, double.PositiveInfinity));
+            surface.Arrange(new Rect(0, 0, width, Math.Ceiling(surface.DesiredSize.Height)));
+            surface.UpdateLayout();
+            await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ContextIdle);
         }
 
         private (FrameworkElement Surface, DataGrid DataGrid) BuildScreenshotSurface()
         {
+            var statusBar = BuildScreenshotStatusBar();
+            var dataGrid = BuildScreenshotDataGrid();
+            DockPanel.SetDock(statusBar, Dock.Bottom);
+
             var root = new DockPanel
             {
                 Background = SystemColors.WindowBrush,
-                LastChildFill = true
+                LastChildFill = true,
+                Children = { statusBar, dataGrid }
             };
-
-            var statusBar = BuildScreenshotStatusBar();
-            DockPanel.SetDock(statusBar, Dock.Bottom);
-            root.Children.Add(statusBar);
-            var dataGrid = BuildScreenshotDataGrid();
-            root.Children.Add(dataGrid);
 
             return (root, dataGrid);
         }
@@ -72,25 +72,24 @@ namespace MediainfoProjectNg
         private StatusBar BuildScreenshotStatusBar()
         {
             var statusBar = new StatusBar();
-
-            var layout = new Grid();
-            layout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            layout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            layout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-            var statusText = new TextBlock { Text = _mediaInfoStatusString };
-            Grid.SetColumn(statusText, 0);
-            layout.Children.Add(statusText);
-
-            var countText = new TextBlock { Text = $"列表中共有 {_fileInfos.Count} 个文件" };
-            Grid.SetColumn(countText, 2);
-            layout.Children.Add(countText);
-
             var statusBarItem = new StatusBarItem
             {
-                Content = layout,
+                Content = new Grid
+                {
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    },
+                    Children =
+                    {
+                        BuildStatusBarText(_mediaInfoStatusString, 0),
+                        BuildStatusBarText($"列表中共有 {_fileInfos.Count} 个文件", 2)
+                    }
+                },
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                Padding = new Thickness(0, 0, 4, 0)
+                Padding = new Thickness(0, 0, StatusBarRightPadding, 0)
             };
             BindingOperations.SetBinding(
                 statusBarItem,
@@ -99,6 +98,13 @@ namespace MediainfoProjectNg
             statusBar.Items.Add(statusBarItem);
 
             return statusBar;
+        }
+
+        private static TextBlock BuildStatusBarText(string text, int column)
+        {
+            var textBlock = new TextBlock { Text = text };
+            Grid.SetColumn(textBlock, column);
+            return textBlock;
         }
 
         private DataGrid BuildScreenshotDataGrid()
@@ -141,7 +147,7 @@ namespace MediainfoProjectNg
                 .OrderBy(column => column.DisplayIndex)
                 .ToArray();
             var fullPathIndex = Array.FindIndex(columns, IsFullPathColumn);
-            return fullPathIndex > 0 ? [.. columns.Take(fullPathIndex)] : columns;
+            return fullPathIndex > 0 ? columns[..fullPathIndex] : columns;
         }
 
         private static bool IsFullPathColumn(DataGridColumn column)
@@ -153,16 +159,15 @@ namespace MediainfoProjectNg
         {
             var dataGridContentWidth = GetDataGridContentWidth(dataGrid);
             var dataGridWidth = dataGridContentWidth + dataGrid.Margin.Left + dataGrid.Margin.Right;
-            var statusBarWidth = 350 + 150;
-            return Math.Min(MaxMeasureWidth, Math.Max(statusBarWidth, dataGridWidth));
+            return Math.Min(MaxMeasureWidth, Math.Max(StatusBarMinWidth, dataGridWidth));
         }
 
         private static double GetDataGridContentWidth(DataGrid dataGrid)
         {
             var columnsWidth = dataGrid.Columns
                 .Where(column => column.Visibility == Visibility.Visible)
-                .Sum(column => column.ActualWidth > 0 ? column.ActualWidth : Math.Max(column.MinWidth, 80));
-            return Math.Ceiling(columnsWidth + 4);
+                .Sum(column => column.ActualWidth > 0 ? column.ActualWidth : Math.Max(column.MinWidth, DefaultColumnWidth));
+            return Math.Ceiling(columnsWidth + DataGridWidthPadding);
         }
 
         private static DataGridColumn CloneColumn(DataGridColumn source)
