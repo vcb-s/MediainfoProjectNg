@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+Aug 6, 2025
+
+* Add indicators for chapter language, video language, default video track, default audio track, subtitle format, subtitle language, default subtitle track, and color format
+* Remove the DEBUG button and add a button to hide the right-side panel
+
 ## 1.0.0
 
 Jul 5, 2022
@@ -7,9 +14,58 @@ Jul 5, 2022
 * Target the project to dotnet 6
 * Adapt to the value nullable types introduced in C# 8.0
 
-## 1.1.0
+## 0.1.6
 
-Aug 6, 2025
+Apr 5, 2022
 
-* Add indicators for chapter language, video language, default video track, default audio track, subtitle format, subtitle language, default subtitle track, and color format
-* Remove the DEBUG button and add a button to hide the right-side panel
+* Add framerate color
+* Fix fps color rendering problem
+* Extend data structure length to avoid data overflow
+* Mitigate chapter name parsing issue
+
+## 0.1.5
+
+Jan 19, 2019
+
+* New technical information window for pros.
+* Add delay detection.
+* Add filename-content mismatch detection (super lazy, use with caution).
+* Show VFR video as VFR rather than average framerate.
+
+## 0.1.4
+
+Jan 20, 2018
+
+* Now multiple selection is enabled.
+* Add first-chapter-not-start-at-0 detection.
+* Resovle an issue that causes program crash when loading non-Matroska file.
+
+## 0.1.3
+
+Nov 23, 2017
+
+* Can bypass files that have already been loaded. (Great thanks to TautCony)
+* Fix issue with duration detect.
+* Auto generated version number.
+
+## 0.1.2
+
+Nov 22, 2017
+
+* Rewrite the file reading part. Now it is asynced. (Very great thanks to TautCony)
+* Add detection for streams with hugely different duration. (Background color is PaleVioletRed)
+* Add detection for strange chapters. (Background color is Yellow)
+
+## 0.1.1
+
+Nov 21, 2017
+
+* Rewrite the back logic
+* Fix issue with sorting
+* Fix file reading problem
+
+## 0.0.1
+
+May  6, 2017
+
+* Basically functional.
