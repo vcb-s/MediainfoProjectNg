@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace MediainfoProjectNg
 {
-    static class Utils
+    static partial class Utils
     {
         // TODO: Determine what should be excluded
         private static readonly List<string> ExcludeDirs =
@@ -97,12 +97,12 @@ namespace MediainfoProjectNg
             return decimal.TryParse(s, out var i) ? (long)i : 0;
         }
 
+        [GeneratedRegex(@"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?:(?<profile>.*?)_)?(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$")]
+        private static partial Regex FilenameRegex();
+
         public static bool FileNameContentMatched(FileInfo info)
         {
-            var filenameReg =
-                new Regex(
-                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?:(?<profile>.*?)_)?(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
-            var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
+            var match = FilenameRegex().Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
             var profile = GenerateProfileString(info.VideoInfos[0].Profile, info.VideoInfos[0].Format, info.VideoInfos[0].BitDepth, info.VideoInfos[0].ColorSpace);
             if (match.Groups["profile"].Value != "" && profile == "") return true;
@@ -174,6 +174,9 @@ namespace MediainfoProjectNg
             }
         }
 
+        [GeneratedRegex("[^a-zA-Z0-9]+", RegexOptions.Compiled)]
+        private static partial Regex NonAlphanumericRegex();
+
         private static string GenerateAencodersString(List<AudioInfo> infos)
         {
             var audios = new Dictionary<string, int>();
@@ -192,8 +195,7 @@ namespace MediainfoProjectNg
 
             foreach (var key in audios.Keys)
             {
-                ret +=
-                    $"_{(audios[key] > 1 ? audios[key].ToString() : string.Empty)}{Regex.Replace(key, "[^a-zA-Z0-9]+", "", RegexOptions.Compiled).ToLower()}";
+                ret += $"_{(audios[key] > 1 ? audios[key].ToString() : string.Empty)}{NonAlphanumericRegex().Replace(key, "").ToLower()}";
             }
 
             return ret;
