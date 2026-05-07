@@ -108,9 +108,12 @@ namespace MediainfoProjectNg
             if (match.Groups["profile"].Value != "" && profile == "") return true;
             var vencoder = GenerateVencoderString(info.VideoInfos[0]);
             if (vencoder == "") return true;
-            return match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
-                                                            && match.Groups["aencoders"].Value ==
-                                                            GenerateAencodersString(info.AudioInfos);
+            return (
+                match.Groups["profile"].Value == profile &&
+                match.Groups["resolution"].Value == GenerateResolutionString(info.VideoInfos[0].Width, info.VideoInfos[0].Height) &&
+                match.Groups["vencoder"].Value == vencoder &&
+                match.Groups["aencoders"].Value == GenerateAencodersString(info.AudioInfos)
+                );
         }
 
         public static int TryParseAsMillisecond(this string s)
@@ -149,14 +152,21 @@ namespace MediainfoProjectNg
             };
         }
 
-        // TODO: Proper resolution calculation
-        private static string GenerateResolutionString(int width, int height)
+        private static string GenerateResolutionString(long width, long height)
         {
-            if (width == 1920 || height == 1080)
-                return "1080p";
-            if (height == 480)
-                return "480p";
-            return "";
+            var longSide = Math.Max(width, height);
+            var shortSide = Math.Min(width, height);
+
+            return (longSide, shortSide) switch
+            {
+                var (l, s) when l >= 3840 || s >= 2160 => "2160p",
+                var (l, s) when l >= 2560 || s >= 1440 => "1440p",
+                var (l, s) when l >= 1920 || s >= 1080 => "1080p",
+                var (l, s) when l >= 1280 || s >= 720 => "720p",
+                var (l, s) when l >= 960 || s >= 540 => "540p",
+                var (l, s) when l >= 854 || s >= 480 => "480p",
+                _ => $"{height}p"
+            };
         }
 
         private static string GenerateVencoderString(VideoInfo info)
