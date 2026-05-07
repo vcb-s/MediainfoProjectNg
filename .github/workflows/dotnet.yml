@@ -2,6 +2,9 @@ name: .NET Build
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -29,4 +32,10 @@ jobs:
         with:
           name: "MediainfoProjectNg"
           path: |
+            MediainfoProjectNg\bin\Release\net10.0-windows\win-x64\publish\MediainfoProjectNg.exe
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
+        with:
+          files: |
             MediainfoProjectNg\bin\Release\net10.0-windows\win-x64\publish\MediainfoProjectNg.exe
