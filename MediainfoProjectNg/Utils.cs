@@ -6,28 +6,27 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows;
 
 namespace MediainfoProjectNg
 {
-    static class Utils
+    static partial class Utils
     {
         // TODO: Determine what should be excluded
-        private static readonly List<string> ExcludeDirs = new List<string>
-        {
+        private static readonly List<string> ExcludeDirs =
+        [
             "CDs",
             "Scans"
-        };
+        ];
 
-        private static readonly List<string> ExcludeExts = new List<string>
-        {
+        private static readonly List<string> ExcludeExts =
+        [
             ".txt",
             ".log",
             ".torrent"
-        };
+        ];
 
-        private static readonly string[] Matroska = {".mkv", ".mka", ".mks"};
-        private static readonly string[] MPEG_4 = {".mp4", ".m4a", ".m4v"};
+        private static readonly string[] Matroska = [".mkv", ".mka", ".mks"];
+        private static readonly string[] MPEG_4 = [".mp4", ".m4a", ".m4v"];
 
         public static IEnumerable<string> EnumerateFolder(string folderPath)
         {
@@ -95,28 +94,31 @@ namespace MediainfoProjectNg
 
         public static long TryParseAsLong(this string s)
         {
-            return decimal.TryParse(s, out var i) ? (long) i : 0;
+            return decimal.TryParse(s, out var i) ? (long)i : 0;
         }
+
+        [GeneratedRegex(@"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?:(?<profile>.*?)_)?(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$")]
+        private static partial Regex FilenameRegex();
 
         public static bool FileNameContentMatched(FileInfo info)
         {
-            var filenameReg =
-                new Regex(
-                    @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?:(?<profile>.*?)_)?(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
-            var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
+            var match = FilenameRegex().Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
             var profile = GenerateProfileString(info.VideoInfos[0].Profile, info.VideoInfos[0].Format, info.VideoInfos[0].BitDepth, info.VideoInfos[0].ColorSpace);
             if (match.Groups["profile"].Value != "" && profile == "") return true;
             var vencoder = GenerateVencoderString(info.VideoInfos[0]);
             if (vencoder == "") return true;
-            return match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
-                                                            && match.Groups["aencoders"].Value ==
-                                                            GenerateAencodersString(info.AudioInfos);
+            return (
+                match.Groups["profile"].Value == profile &&
+                match.Groups["resolution"].Value == GenerateResolutionString(info.VideoInfos[0].Width, info.VideoInfos[0].Height) &&
+                match.Groups["vencoder"].Value == vencoder &&
+                match.Groups["aencoders"].Value == GenerateAencodersString(info.AudioInfos)
+                );
         }
 
         public static int TryParseAsMillisecond(this string s)
         {
-            return TimeSpan.TryParse(s, out var ts) ? (int) ts.TotalMilliseconds : 0;
+            return TimeSpan.TryParse(s, out var ts) ? (int)ts.TotalMilliseconds : 0;
         }
 
         private static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> source)
@@ -150,30 +152,36 @@ namespace MediainfoProjectNg
             };
         }
 
-        // TODO: Proper resolution calculation
-        private static string GenerateResolutionString(int width, int height)
+        private static string GenerateResolutionString(long width, long height)
         {
-            if (width == 1920 || height == 1080)
-                return "1080p";
-            if (height == 480)
-                return "480p";
-            return "";
+            var longSide = Math.Max(width, height);
+            var shortSide = Math.Min(width, height);
+
+            return (longSide, shortSide) switch
+            {
+                var (l, s) when l >= 3840 || s >= 2160 => "2160p",
+                var (l, s) when l >= 2560 || s >= 1440 => "1440p",
+                var (l, s) when l >= 1920 || s >= 1080 => "1080p",
+                var (l, s) when l >= 1280 || s >= 720 => "720p",
+                var (l, s) when l >= 960 || s >= 540 => "540p",
+                var (l, s) when l >= 854 || s >= 480 => "480p",
+                _ => $"{height}p"
+            };
         }
 
         private static string GenerateVencoderString(VideoInfo info)
         {
-            switch (info.Format)
+            return info.Format switch
             {
-                case "HEVC":
-                    return "x265";
-                case "AVC":
-                    return "x264";
-                case "AV1":
-                    return "svtav1";
-                default:
-                    return "";
-            }
+                "HEVC" => "x265",
+                "AVC" => "x264",
+                "AV1" => "svtav1",
+                _ => "",
+            };
         }
+
+        [GeneratedRegex("[^a-zA-Z0-9]+", RegexOptions.Compiled)]
+        private static partial Regex NonAlphanumericRegex();
 
         private static string GenerateAencodersString(List<AudioInfo> infos)
         {
@@ -181,20 +189,12 @@ namespace MediainfoProjectNg
             var ret = "";
             foreach (AudioInfo info in infos)
             {
-                if (!audios.ContainsKey(info.Format))
-                {
-                    audios.Add(info.Format, 1);
-                }
-                else
-                {
-                    audios[info.Format]++;
-                }
+                audios[info.Format] = audios.GetValueOrDefault(info.Format) + 1;
             }
 
             foreach (var key in audios.Keys)
             {
-                ret +=
-                    $"_{(audios[key] > 1 ? audios[key].ToString() : string.Empty)}{Regex.Replace(key, "[^a-zA-Z0-9]+", "", RegexOptions.Compiled).ToLower()}";
+                ret += $"_{(audios[key] > 1 ? audios[key].ToString() : string.Empty)}{NonAlphanumericRegex().Replace(key, "").ToLower()}";
             }
 
             return ret;
@@ -209,18 +209,27 @@ namespace MediainfoProjectNg
                 || info.GeneralInfo.Format == "MPEG-4" && !MPEG_4.Contains(extension))
             {
                 ret.Add(new ErrorInfo(
-                    level:       ErrorLevel.Error,
+                    level: ErrorLevel.Error,
                     description: $"文件后缀和与容器不符。后缀：{extension}，容器{info.GeneralInfo.Format}",
-                    brush:       Brushes.Red
+                    brush: Brushes.Red
                 ));
             }
 
             if (info.VideoInfos.Any(o => o.Delay != 0) || info.AudioInfos.Any(o => o.Delay != 0))
             {
                 ret.Add(new ErrorInfo(
-                    level:       ErrorLevel.Warning,
+                    level: ErrorLevel.Warning,
                     description: "容器中含有延时非 0 的轨道。",
-                    brush:       new SolidColorBrush(Color.FromRgb(0, 164, 172))
+                    brush: new SolidColorBrush(Color.FromRgb(0, 164, 172))
+                ));
+            }
+
+            if (info.VideoInfos.Any(o => o.Language != "UND"))
+            {
+                ret.Add(new ErrorInfo(
+                    level: ErrorLevel.Error,
+                    description: "视频轨道语言非 UND。",
+                    brush: Brushes.Orange
                 ));
             }
 
@@ -232,9 +241,9 @@ namespace MediainfoProjectNg
                 if (duration.Max() - duration.Min() > 600)
                 {
                     ret.Add(new ErrorInfo(
-                        level:       ErrorLevel.Warning,
+                        level: ErrorLevel.Warning,
                         description: "轨道间长度相差过大。",
-                        brush:       Brushes.PaleVioletRed
+                        brush: Brushes.PaleVioletRed
                     ));
                 }
 
@@ -243,33 +252,33 @@ namespace MediainfoProjectNg
                     if (info.GeneralInfo.ChapterCount == 1)
                     {
                         ret.Add(new ErrorInfo(
-                            level:       ErrorLevel.Warning,
+                            level: ErrorLevel.Warning,
                             description: "文件只有一个章节。",
-                            brush:       Brushes.Yellow
+                            brush: Brushes.Yellow
                         ));
                     }
                     else if (info.GeneralInfo.ChapterCount == -1)
                     {
                         ret.Add(new ErrorInfo(
-                            level:       ErrorLevel.Warning,
+                            level: ErrorLevel.Warning,
                             description: "文件存在多组章节。",
-                            brush:       Brushes.Yellow
+                            brush: Brushes.Yellow
                         ));
                     }
                     else if (info.ChapterInfos.Last().Timespan > duration.Max() - 1100)
                     {
                         ret.Add(new ErrorInfo(
-                            level:       ErrorLevel.Warning,
+                            level: ErrorLevel.Warning,
                             description: "文件末尾有无用章节。",
-                            brush:       Brushes.Yellow
+                            brush: Brushes.Yellow
                         ));
                     }
                     else if (info.ChapterInfos.First().Timespan != 0)
                     {
                         ret.Add(new ErrorInfo(
-                            level:       ErrorLevel.Warning,
+                            level: ErrorLevel.Warning,
                             description: "首个章节时间戳非零。",
-                            brush:       Brushes.Yellow
+                            brush: Brushes.Yellow
                         ));
                     }
                 }
@@ -277,18 +286,18 @@ namespace MediainfoProjectNg
                 if (!FileNameContentMatched(info))
                 {
                     ret.Add(new ErrorInfo(
-                        level:       ErrorLevel.Error,
+                        level: ErrorLevel.Error,
                         description: "内容物和文件名描述不符。",
-                        brush:       Brushes.Violet
+                        brush: Brushes.Violet
                     ));
                 }
 
                 if (info.AudioInfos.Count > 2)
                 {
                     ret.Add(new ErrorInfo(
-                        level:       ErrorLevel.Info,
+                        level: ErrorLevel.Info,
                         description: "文件含有多条音轨。",
-                        brush:       Brushes.GreenYellow
+                        brush: Brushes.GreenYellow
                     ));
                 }
             }

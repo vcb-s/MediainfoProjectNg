@@ -1,0 +1,12 @@
+mode: ContinuousDelivery
+assembly-informational-format: '{FullSemVer}'
+branches:
+  main:
+    regex: ^master$|^main$
+    tag: ''
+  develop:
+    regex: ^dev(elop)?(ment)?$
+    tag: ''
+    increment: Patch
+    source-branches:
+    - main

@@ -13,13 +13,11 @@ namespace MediainfoProjectNg.Converter
         {
             if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
             if (value is not VideoInfo info) return DependencyProperty.UnsetValue;
-            switch (info.ColorSpace)
+            return info.ColorSpace switch
             {
-                case "YUV420":
-                    return DependencyProperty.UnsetValue;
-                default:
-                    return Brushes.Orange;
-            }
+                "YUV420" => DependencyProperty.UnsetValue,
+                _ => Brushes.Orange,
+            };
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

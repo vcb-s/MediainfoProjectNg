@@ -1,32 +1,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace MediainfoProjectNg
 {
-    class KeyValue
+    public class KeyValue(string key, string value)
     {
-        public string Key { get; }
-        public string Value { get; }
-
-        public KeyValue(string key, string value)
-        {
-            Key = key;
-            Value = value;
-        }
+        public string Key { get; } = key;
+        public string Value { get; } = value;
     }
 
-    class KeyChildren
-    {
-        public string Key { get; }
-        public List<object> Children { get; } = new List<object>();
 
-        public KeyChildren(string key)
-        {
-            Key = key;
-        }
+    class KeyChildren(string key)
+    {
+        public string Key { get; } = key;
+        public List<object> Children { get; } = [];
     }
 
     /// <summary>
@@ -53,15 +44,20 @@ namespace MediainfoProjectNg
             var d = new KeyChildren(name);
             foreach (var prop in props)
             {
+                if (Attribute.GetCustomAttribute(prop, typeof(BrowsableAttribute)) is BrowsableAttribute { Browsable: false })
+                {
+                    continue;
+                }
+
                 var value = prop.GetValue(o);
 
                 switch (value)
                 {
-                    case GeneralInfo _:
-                    case FileInfo _:
-                    case AudioInfo _:
-                    case ChapterInfo _:
-                    case ProfileInfo _:
+                    case GeneralInfo:
+                    case FileInfo:
+                    case AudioInfo:
+                    case ChapterInfo:
+                    case ProfileInfo:
                         d.Children.Add(GetTreeStructure(prop.Name, value));
                         break;
                     case IList list:
@@ -80,11 +76,11 @@ namespace MediainfoProjectNg
                     default:
                         if (prop.Name == "Summary" && value is string sum)
                         {
-                            d.Children.Add(new KeyChildren(prop.Name) {Children = {new KeyValue("", sum)}});
+                            d.Children.Add(new KeyChildren(prop.Name) { Children = { new KeyValue("", sum) } });
                         }
                         else if ((prop.Name == "Duration" || prop.Name == "Timespan") && value is int ms)
                         {
-                            var ticks = (long) ms * 10000;
+                            var ticks = (long)ms * 10000;
                             var ts = new TimeSpan(ticks);
                             d.Children.Add(new KeyValue(prop.Name, ts.ToString(@"hh\:mm\:ss\.fff")));
                         }
@@ -102,14 +98,14 @@ namespace MediainfoProjectNg
 
         private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = (MenuItem) e.OriginalSource;
-            Clipboard.SetText(((KeyValue) s.DataContext).Value);
+            var s = (MenuItem)e.OriginalSource;
+            Clipboard.SetText(((KeyValue)s.DataContext).Value);
         }
 
         private void MenuItemKeyValuePairCopy_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = (MenuItem) e.OriginalSource;
-            var keyValue = (KeyValue) s.DataContext;
+            var s = (MenuItem)e.OriginalSource;
+            var keyValue = (KeyValue)s.DataContext;
             Clipboard.SetText($"{keyValue.Key}: {keyValue.Value}");
         }
     }

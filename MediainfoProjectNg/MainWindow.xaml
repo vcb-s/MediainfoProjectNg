@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediainfoProjectNg"
-        xmlns:converter="clr-namespace:MediainfoProjectNg.Converter"
+        xmlns:converter="clr-namespace:MediainfoProjectNg.Converter" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="{Binding Path=TitleString, Mode=OneTime}" Height="400" Width="800" MinWidth="800" MinHeight="350"
         ResizeMode="CanResizeWithGrip"
@@ -25,14 +25,15 @@
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem Width="350">
+                <StatusBarItem Width="480">
                     <TextBlock Text="{Binding StatusString}" />
                 </StatusBarItem>
-                <StatusBarItem Width="150">
-                    <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
-                </StatusBarItem>
-                <StatusBarItem Width="150" HorizontalAlignment="Right">
-                    <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Click="ToggleRightPanelButton_Click"/>
+                <StatusBarItem Width="320" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="130" DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
+                        <Button x:Name="CaptureWindowButton" Content="截图" Width="60" Click="CaptureWindowButton_Click" HorizontalAlignment="Right" />
+                        <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Margin="6,0,0,0" Click="ToggleRightPanelButton_Click" HorizontalAlignment="Right"/>
+                    </StackPanel>
                 </StatusBarItem>
             </StatusBar>
             
@@ -43,7 +44,7 @@
                     <ColumnDefinition x:Name="RightPanelDef" Width="320" MinWidth="320" />
                 </Grid.ColumnDefinitions>
 
-                <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
+                <GridSplitter x:Name="PanelSplitter" Grid.Column="1" Width="2" HorizontalAlignment="Stretch" />
                 <DataGrid x:Name="DataGrid1" Grid.Column="0"
                           HorizontalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
                           VerticalGridLinesBrush="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"
@@ -57,57 +58,50 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="文件名" Binding="{Binding Path=GeneralInfo.Filename}" />
                         <DataGridTextColumn Header="容器" Binding="{Binding Path=GeneralInfo.Format}" />
-                        <DataGridTextColumn Header="编码" Binding="{Binding Path=VideoInfos[0].Format}" />
-                        <DataGridTextColumn Header="分辨率">
-                            <DataGridTextColumn.Binding>
-                                <MultiBinding StringFormat="{}{0}x{1}">
-                                    <Binding Path="VideoInfos[0].Width" />
-                                    <Binding Path="VideoInfos[0].Height" />
-                                </MultiBinding>
-                            </DataGridTextColumn.Binding>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="位深" Binding="{Binding Path=VideoInfos[0].BitDepth}" />
-                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=VideoInfos[0], Converter={StaticResource FpsModeToTextConverter}}">
+                        <DataGridTextColumn Header="编码" Binding="{Binding Path=Video0.Format}" />
+                        <DataGridTextColumn Header="分辨率" Binding="{Binding Path=Video0.Resolution}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=Video0.BitDepth}" />
+                        <DataGridTextColumn Header="帧率" Binding="{Binding Path=Video0, Converter={StaticResource FpsModeToTextConverter}}">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="BorderThickness" Value="0" />
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="False">
-                                            <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource FpsToTextColorConverter}}" />
+                                            <Setter Property="Foreground" Value="{Binding Path=Video0, Converter={StaticResource FpsToTextColorConverter}}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="色彩格式" Binding="{Binding Path=VideoInfos[0].ColorSpace}">
+                        <DataGridTextColumn Header="色彩格式" Binding="{Binding Path=Video0.ColorSpace}">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="BorderThickness" Value="0" />
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="False">
-                                            <Setter Property="Foreground" Value="{Binding Path=VideoInfos[0], Converter={StaticResource ColorSpaceToColorConverter}}" />
+                                            <Setter Property="Foreground" Value="{Binding Path=Video0, Converter={StaticResource ColorSpaceToColorConverter}}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="语言" Binding="{Binding Path=VideoInfos[0].Language}" />
-                        <DataGridTextColumn Header="默认" Binding="{Binding Path=VideoInfos[0].Default}" />
-                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=AudioInfos[0].Format}" />
-                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[0].BitDepth}" />
-                        <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[0].Bitrate}" />
-                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[0].Language}" />
-                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[0].Default}" />
-                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=AudioInfos[1].Format}" />
-                        <DataGridTextColumn Header="位深" Binding="{Binding Path=AudioInfos[1].BitDepth}" />
-                        <DataGridTextColumn Header="码率" Binding="{Binding Path=AudioInfos[1].Bitrate}" />
-                        <DataGridTextColumn Header="语言" Binding="{Binding Path=AudioInfos[1].Language}" />
-                        <DataGridTextColumn Header="默认" Binding="{Binding Path=AudioInfos[1].Default}" />
-                        <DataGridTextColumn Header="#1字幕" Binding="{Binding Path=SubInfos[0].Format}" />
-                        <DataGridTextColumn Header="语言" Binding="{Binding Path=SubInfos[0].Language}" />
-                        <DataGridTextColumn Header="默认" Binding="{Binding Path=SubInfos[0].Default}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=Video0.Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=Video0.Default}" />
+                        <DataGridTextColumn Header="#1音轨" Binding="{Binding Path=Audio0.Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=Audio0.BitDepth}" />
+                        <DataGridTextColumn Header="码率" Binding="{Binding Path=Audio0.Bitrate}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=Audio0.Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=Audio0.Default}" />
+                        <DataGridTextColumn Header="#2音轨" Binding="{Binding Path=Audio1.Format}" />
+                        <DataGridTextColumn Header="位深" Binding="{Binding Path=Audio1.BitDepth}" />
+                        <DataGridTextColumn Header="码率" Binding="{Binding Path=Audio1.Bitrate}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=Audio1.Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=Audio1.Default}" />
+                        <DataGridTextColumn Header="#1字幕" Binding="{Binding Path=Sub0.Format}" />
+                        <DataGridTextColumn Header="语言" Binding="{Binding Path=Sub0.Language}" />
+                        <DataGridTextColumn Header="默认" Binding="{Binding Path=Sub0.Default}" />
                         <DataGridTextColumn Header="章节" Binding="{Binding Path=GeneralInfo.ChapterCount,Converter={StaticResource ChapterCountToStateConverter}}" />
                         <DataGridTextColumn Header="语言" Binding="{Binding ChapterInfos, Converter={StaticResource UnifiedLanguageConverter}}">
                             <DataGridTextColumn.CellStyle>

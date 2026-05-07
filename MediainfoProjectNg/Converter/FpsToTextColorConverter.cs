@@ -14,19 +14,13 @@ namespace MediainfoProjectNg.Converter
             if (targetType != typeof(Brush)) return DependencyProperty.UnsetValue;
             if (value is not VideoInfo info) return DependencyProperty.UnsetValue;
             if (info.FpsMode == "VFR") return Brushes.DarkViolet;
-            switch (info.Fps)
+            return info.Fps switch
             {
-                case "23.976 (24000/1001)":
-                    return DependencyProperty.UnsetValue;
-                case "29.970 (30000/1001)":
-                case "59.940 (60000/1001)":
-                    return Brushes.Olive;
-                case "23.976 (23976/1000)":
-                case "29.970 (29970/1000)":
-                    return Brushes.SlateBlue;
-                default:
-                    return Brushes.Maroon;
-            }
+                "23.976 (24000/1001)" => DependencyProperty.UnsetValue,
+                "29.970 (30000/1001)" or "59.940 (60000/1001)" => Brushes.Olive,
+                "23.976 (23976/1000)" or "29.970 (29970/1000)" => Brushes.SlateBlue,
+                _ => Brushes.Maroon,
+            };
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
