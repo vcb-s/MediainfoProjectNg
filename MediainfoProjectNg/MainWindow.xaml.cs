@@ -1,12 +1,13 @@
-using System.Collections.Generic;
+using MediaInfoLib;
+using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MediaInfoLib;
 
 namespace MediainfoProjectNg
 {
@@ -17,17 +18,21 @@ namespace MediainfoProjectNg
     {
         private readonly FileInfos _fileInfos;
         private readonly MainWindowViewModel _mainWindowViewModel;
-        private System.Windows.GridLength _rightPanelOriginalWidth;
+        private GridLength _rightPanelOriginalWidth;
+        private readonly string _mediaInfoStatusString = string.Empty;
+        private readonly string _titleString = string.Empty;
+
         public MainWindow()
         {
             InitializeComponent();
             _rightPanelOriginalWidth = RightPanelDef.Width;
-            _fileInfos = (FileInfos) FindResource("FileInfos");
-            _mainWindowViewModel = (MainWindowViewModel) FindResource("WindowViewModel");
+            _fileInfos = (FileInfos)FindResource("FileInfos");
+            _mainWindowViewModel = (MainWindowViewModel)FindResource("WindowViewModel");
             DataContext = _mainWindowViewModel;
 
-            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            _mainWindowViewModel.TitleString = $"mediainfo project ng {v}";
+            var v = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            _titleString = $"mediainfo project ng {v}";
+            _mainWindowViewModel.TitleString = _titleString;
 
             MediaInfo? MI = null;
             try
@@ -36,13 +41,15 @@ namespace MediainfoProjectNg
                 var version = MI.Option("Info_Version");
                 if (version == "Unable to load MediaInfo library")
                 {
-                    _mainWindowViewModel.TitleString += " [Mediainfo: Unavailable]";
-                    MessageBox.Show("无法载入适用的 mediainfo，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _mediaInfoStatusString = "MediainfoLib unavailable.";
+                    _mainWindowViewModel.TitleString += $" [{_mediaInfoStatusString}]";
+                    MessageBox.Show("无法载入适用的 MediainfoLib，请检查！", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    _mainWindowViewModel.TitleString += $" [Mediainfo: {version.Substring(15)}]";
-                    _mainWindowViewModel.StatusString = $"Mediainfo DLL {version.Substring(15)} at your service.";
+                    _mediaInfoStatusString = $"MediainfoLib {version[15..]}";
+                    _mainWindowViewModel.TitleString += $" [{_mediaInfoStatusString}]";
+                    _mainWindowViewModel.StatusString = _mediaInfoStatusString;
                 }
             }
             finally
@@ -63,23 +70,65 @@ namespace MediainfoProjectNg
             {
                 RightPanel.Visibility = Visibility.Collapsed;
                 _rightPanelOriginalWidth = RightPanelDef.Width;
-                RightPanelDef.Width = new GridLength(0);
                 RightPanelDef.MinWidth = 0;
+                RightPanelDef.Width = new GridLength(0);
                 ToggleRightPanelButton.Content = "显示右侧面板";
             }
             else
             {
                 RightPanel.Visibility = Visibility.Visible;
-                RightPanelDef.Width = _rightPanelOriginalWidth;
                 RightPanelDef.MinWidth = 320;
+                RightPanelDef.Width = _rightPanelOriginalWidth;
                 ToggleRightPanelButton.Content = "隐藏右侧面板";
+            }
+            PanelSplitter.Visibility = RightPanel.Visibility;
+        }
+
+        private async void CaptureWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_fileInfos.Count == 0)
+            {
+                MessageBox.Show("列表中没有可截图的文件。", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = ".png",
+                FileName = $"MPNG-{DateTime.Now:yyyyMMdd-HHmmss}.png",
+                Filter = "PNG 图片 (*.png)|*.png",
+                Title = "保存窗口截图"
+            };
+
+            if (dialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            CaptureWindowButton.IsEnabled = false;
+            _mainWindowViewModel.StatusString = "正在生成截图...";
+
+            try
+            {
+                await SaveFullRowsScreenshotAsync(dialog.FileName);
+                _mainWindowViewModel.StatusString = $"截图已保存: {dialog.FileName}";
+            }
+            catch (Exception ex)
+            {
+                _mainWindowViewModel.StatusString = "截图失败";
+                MessageBox.Show($"截图失败：{ex.Message}", "mediainfo project ng", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                CaptureWindowButton.IsEnabled = true;
             }
         }
 
         private async void DataGrid1_OnDrop(object sender, DragEventArgs e)
         {
             _mainWindowViewModel.StatusString = string.Empty;
-            if (!(e.Data.GetData(DataFormats.FileDrop) is string[] urls)) return;
+            if (e.Data.GetData(DataFormats.FileDrop) is not string[] urls) return;
             var oldList = _fileInfos.Select(info => info.GeneralInfo.FullPath).ToList();
             var ret = await Utils.Load(urls, url => oldList.Contains(url), url => _mainWindowViewModel.StatusString = Path.GetFileName(url));
             _fileInfos.AddItems(ret.info);
@@ -112,9 +161,9 @@ namespace MediainfoProjectNg
 
         private void DataGridRow_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!(sender is DataGridRow)) return;
-            var row = (DataGridRow) sender;
-            var q = (FileInfo) row.Item;
+            if (sender is not DataGridRow) return;
+            var row = (DataGridRow)sender;
+            var q = (FileInfo)row.Item;
             var win = new TechnicalWindow(q);
             win.Show();
         }
