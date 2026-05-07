@@ -12,21 +12,21 @@ namespace MediainfoProjectNg
     static class Utils
     {
         // TODO: Determine what should be excluded
-        private static readonly List<string> ExcludeDirs = new List<string>
-        {
+        private static readonly List<string> ExcludeDirs =
+        [
             "CDs",
             "Scans"
-        };
+        ];
 
-        private static readonly List<string> ExcludeExts = new List<string>
-        {
+        private static readonly List<string> ExcludeExts =
+        [
             ".txt",
             ".log",
             ".torrent"
-        };
+        ];
 
-        private static readonly string[] Matroska = { ".mkv", ".mka", ".mks" };
-        private static readonly string[] MPEG_4 = { ".mp4", ".m4a", ".m4v" };
+        private static readonly string[] Matroska = [".mkv", ".mka", ".mks"];
+        private static readonly string[] MPEG_4 = [".mp4", ".m4a", ".m4v"];
 
         public static IEnumerable<string> EnumerateFolder(string folderPath)
         {
@@ -104,9 +104,10 @@ namespace MediainfoProjectNg
                     @"^\[[^\[\]]*VCB\-S(?:tudio)?[^\[\]]*\] [^\[\]]+ (?:\[[^\[\]]*\d*\])?\[(?<profile>.*?)_(?<resolution>.*?)\]\[(?<vencoder>.*?)(?<aencoders>(?:_\d*.*?)*)\]\.mkv$");
             var match = filenameReg.Match(Path.GetFileName(info.GeneralInfo.FullPath)!);
             if (!match.Success) return true;
-            var profile = GenerateProfileString(info.VideoInfos[0].Profile);
+            if (info.Video0 is not { } videoInfo) return true;
+            var profile = GenerateProfileString(videoInfo.Profile);
             if (profile == "") return true;
-            var vencoder = GenerateVencoderString(info.VideoInfos[0]);
+            var vencoder = GenerateVencoderString(videoInfo);
             if (vencoder == "") return true;
             return match.Groups["profile"].Value == profile && match.Groups["vencoder"].Value == vencoder
                                                             && match.Groups["aencoders"].Value ==
@@ -210,6 +211,15 @@ namespace MediainfoProjectNg
                     level: ErrorLevel.Warning,
                     description: "容器中含有延时非 0 的轨道。",
                     brush: new SolidColorBrush(Color.FromRgb(0, 164, 172))
+                ));
+            }
+
+            if (info.VideoInfos.Any(o => o.Language != "UND"))
+            {
+                ret.Add(new ErrorInfo(
+                    level: ErrorLevel.Error,
+                    description: "视频轨道语言非 UND。",
+                    brush: Brushes.Orange
                 ));
             }
 
