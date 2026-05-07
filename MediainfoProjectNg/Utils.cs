@@ -161,17 +161,13 @@ namespace MediainfoProjectNg
 
         private static string GenerateVencoderString(VideoInfo info)
         {
-            switch (info.Format)
+            return info.Format switch
             {
-                case "HEVC":
-                    return "x265";
-                case "AVC":
-                    return "x264";
-                case "AV1":
-                    return "svtav1";
-                default:
-                    return "";
-            }
+                "HEVC" => "x265",
+                "AVC" => "x264",
+                "AV1" => "svtav1",
+                _ => "",
+            };
         }
 
         [GeneratedRegex("[^a-zA-Z0-9]+", RegexOptions.Compiled)]
@@ -183,14 +179,7 @@ namespace MediainfoProjectNg
             var ret = "";
             foreach (AudioInfo info in infos)
             {
-                if (!audios.ContainsKey(info.Format))
-                {
-                    audios.Add(info.Format, 1);
-                }
-                else
-                {
-                    audios[info.Format]++;
-                }
+                audios[info.Format] = audios.GetValueOrDefault(info.Format) + 1;
             }
 
             foreach (var key in audios.Keys)

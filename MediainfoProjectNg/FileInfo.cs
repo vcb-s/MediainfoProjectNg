@@ -139,21 +139,13 @@ namespace MediainfoProjectNg
                     videoCount: MI.Get(StreamKind.General, 0, "VideoCount").TryParseAsLong(),
                     audioCount: MI.Get(StreamKind.General, 0, "AudioCount").TryParseAsLong(),
                     textCount: MI.Get(StreamKind.General, 0, "TextCount").TryParseAsLong(),
-                    chapterCount: -1
+                    chapterCount: MI.Get(StreamKind.General, 0, "MenuCount").TryParseAsLong() switch
+                    {
+                        0 => 0,
+                        1 => MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong() - MI.Get(StreamKind.Menu, 0, "Chapters_Pos_Begin").TryParseAsLong(),
+                        _ => -1
+                    }
                 );
-
-                switch (MI.Get(StreamKind.General, 0, "MenuCount").TryParseAsLong())
-                {
-                    case 0:
-                        GeneralInfo.ChapterCount = 0;
-                        break;
-                    case 1:
-                        GeneralInfo.ChapterCount = MI.Get(StreamKind.Menu, 0, "Chapters_Pos_End").TryParseAsLong() -
-                                                   MI.Get(StreamKind.Menu, 0, "Chapters_Pos_Begin").TryParseAsLong();
-                        break;
-                    default:
-                        break;
-                }
 
                 for (var i = 0; i < GeneralInfo.VideoCount; i++)
                 {
