@@ -25,16 +25,14 @@
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
-                <StatusBarItem Width="350">
+                <StatusBarItem Width="480">
                     <TextBlock Text="{Binding StatusString}" />
                 </StatusBarItem>
-                <StatusBarItem Width="150">
-                    <TextBlock DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
-                </StatusBarItem>
-                <StatusBarItem Width="220" HorizontalAlignment="Right">
+                <StatusBarItem Width="320" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="CaptureWindowButton" Content="截图" Width="60" Click="CaptureWindowButton_Click" />
-                        <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Margin="6,0,0,0" Click="ToggleRightPanelButton_Click"/>
+                        <TextBlock Width="130" DataContext="{StaticResource FileInfos}"  Text="{Binding Path=Count,StringFormat='列表中共有 {0} 个文件'}" />
+                        <Button x:Name="CaptureWindowButton" Content="截图" Width="60" Click="CaptureWindowButton_Click" HorizontalAlignment="Right" />
+                        <Button x:Name="ToggleRightPanelButton" Content="隐藏右侧面板" Width="100" Margin="6,0,0,0" Click="ToggleRightPanelButton_Click" HorizontalAlignment="Right"/>
                     </StackPanel>
                 </StatusBarItem>
             </StatusBar>
